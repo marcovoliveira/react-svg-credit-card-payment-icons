@@ -7,9 +7,6 @@ const SvgMir = (props: SVGProps<SVGSVGElement>) => (
     id="mir_svg__Layer_1"
     x={0}
     y={0}
-    style={{
-      enableBackground: "new 0 0 780 500",
-    }}
     viewBox="0 0 780 500"
     {...props}
   >

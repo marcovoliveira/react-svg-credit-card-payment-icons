@@ -30,8 +30,9 @@ type PaymentType = keyof typeof FlatComponents &
 
 type PaymentCategory = keyof typeof categoryMappings;
 
+export type PaymentTypeExtended = PaymentType | 'Generic' | 'Code';
 
-const defaultType = 'Generic' as PaymentType;
+const defaultType = 'generic' as PaymentTypeExtended;
 const defaultCategory = 'flat';
 
 const aspectRatio = 780 / 500; // Width / Height of the svgs.
@@ -39,17 +40,18 @@ const aspectRatio = 780 / 500; // Width / Height of the svgs.
 const defaultWidth = 40;
 
 type PaymentIconProps = {
-  type: PaymentType;
-  category?: PaymentCategory;
+  type: PaymentTypeExtended;
+  format?: PaymentCategory;
 } & SVGProps<SVGSVGElement>;
 
 export function PaymentIcon(props: PaymentIconProps): JSX.Element {
-  const category = props.category || defaultCategory as PaymentCategory;
+  const category = props.format || defaultCategory as PaymentCategory;
   if(!categoryMappings[category]) throw new Error(`Invalid category: ${category} please use one of ${Object.keys(categoryMappings).join(', ')}`);
   const cardProvider = (props.type || defaultType).charAt(0).toUpperCase() + (props.type || defaultType).slice(1) as PaymentType;
-  const categoryComponents = categoryMappings[category];
-  
-  const Component: (props: SVGProps<SVGSVGElement>) => JSX.Element = categoryComponents[cardProvider] ?? categoryComponents[cardProvider];
+
+  const categoryComponents = categoryMappings[category]; 
+
+  const Component: (props: SVGProps<SVGSVGElement>) => JSX.Element = categoryComponents[cardProvider] ?? FlatRoundedComponents.Generic;
 
   const width = props.width === undefined && props.height === undefined ? defaultWidth : props.width as number;
 

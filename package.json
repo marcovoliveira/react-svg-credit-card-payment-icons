@@ -1,13 +1,13 @@
 {
   "name": "react-svg-credit-card-payment-icons",
   "license": "MIT",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "repository": "git@github.com:marcovoliveira/svg-credit-card-payment-icons.git",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup index.ts --format cjs,esm --dts",
+    "build": "tsup src/index.tsx --format cjs,esm --dts",
     "lint": "tsc",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

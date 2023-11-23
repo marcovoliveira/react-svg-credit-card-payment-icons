@@ -9,7 +9,7 @@ export const Default = {
   args: {
     viewBox: '0 0 780 500',
     width: 150,
-    type: 'amex',
-    category: 'logoBorder',
+    type: 'mastercard',
+    format: 'flatRounded',
   },
 };
