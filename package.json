@@ -1,7 +1,7 @@
 {
   "name": "react-svg-credit-card-payment-icons",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": "git@github.com:marcovoliveira/svg-credit-card-payment-icons.git",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
