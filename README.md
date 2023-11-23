@@ -32,7 +32,7 @@ import PaymentIcon from 'react-svg-credit-card-payment-icons';
 ```tsx
 const App = () => {
   return (
-    <PaymentIcon type="visa" width={80} />
+    <PaymentIcon type="visa" format="flat-rounded" width={80} />
   );
 };
 ```
@@ -43,22 +43,22 @@ const App = () => {
 
 |Type    |Image
 |---    |---
-|`alipay`    |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/alipay.svg" width=80/>
-|`american-express`<br>`amex` |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/amex.svg" width=80/>
-|`diners-club`<br>`diners`    |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/diners.svg" width=80/>
-|`discover`   |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/discover.svg" width=80/>
-|`elo`    |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/elo.svg" width=80/>
-|`hiper`    |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/hiper.svg" width=80/>
-|`hipercard`   |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/hipercard.svg" width=80/>
-|`jcb`    |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/jcb.svg" width=80/>
-|`maestro`   |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/maestro.svg" width=80/>
-|`mastercard`<br>`master`   |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/mastercard.svg" width=80/>
-|`mir`    |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/mir.svg" width=80/>
-|`paypal`    |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/paypal.svg" width=80/>
-|`unionpay`   |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/unionpay.svg" width=80/>
-|`visa`    |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/visa.svg" width=80/>
-|`generic`  |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/generic.svg" width=80/>
-|`cvv`<br>`code`  |<img src="https://github.com/SrBrahma/react-native-payment-icons/raw/main/svgsSrc/code.svg" width=80/>
+|`alipay`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/alipay.svg" width=80/>
+|`american-express`<br>`amex` |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/amex.svg" width=80/>
+|`diners-club`<br>`diners`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/diners.svg" width=80/>
+|`discover`   |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/discover.svg" width=80/>
+|`elo`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/elo.svg" width=80/>
+|`hiper`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/hiper.svg" width=80/>
+|`hipercard`   |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/hipercard.svg" width=80/>
+|`jcb`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/jcb.svg" width=80/>
+|`maestro`   |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/maestro.svg" width=80/>
+|`mastercard`<br>`master`   |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/mastercard.svg" width=80/>
+|`mir`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/mir.svg" width=80/>
+|`paypal`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/paypal.svg" width=80/>
+|`unionpay`   |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/unionpay.svg" width=80/>
+|`visa`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/visa.svg" width=80/>
+|`generic`  |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/generic.svg" width=80/>
+|`cvv`<br>`code`  |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/flat-rounded/code.svg" width=80/>
 
 Images from [`aaronfagan/svg-credit-card-payment-icons`](https://github.com/aaronfagan/svg-credit-card-payment-icons)
 

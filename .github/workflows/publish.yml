@@ -18,7 +18,7 @@ jobs:
           version: 8
       - uses: actions/setup-node@v3
         with:
-          nove-version: 16.x
+          node-version: 16.x
           cache: "pnpm"
           
       - run: pnpm install --frozen-lockfile

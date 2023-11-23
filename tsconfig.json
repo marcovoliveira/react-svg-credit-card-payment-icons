@@ -1,5 +1,7 @@
 {
+  "include": ["src/components", "src/custom.d.ts", "src/PaymentIcon.stories.tsx"],
   "compilerOptions": {
+    "jsx": "react",
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
     /* Projects */
