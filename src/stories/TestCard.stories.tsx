@@ -2,7 +2,7 @@ import { PaymentIcon } from '../index';
 
 export default {
   component: PaymentIcon,
-  title: 'Test your card',
+  title: 'Test Your Card',
   tags: ['autodocs'],
 };
 export const Default = {

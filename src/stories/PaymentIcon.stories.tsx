@@ -4,7 +4,7 @@ import CustomGrid from './CustomGrid';
 
 const meta = {
   component: CustomGrid,
-  title: 'Paymen Cards',
+  title: 'Payment Cards',
   tags: ['autodocs'],
 } satisfies Meta<typeof CustomGrid>;
 
