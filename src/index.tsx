@@ -47,7 +47,8 @@ type PaymentIconProps = {
 export function PaymentIcon(props: PaymentIconProps): JSX.Element {
   const category = props.format || defaultCategory as PaymentCategory;
   if(!categoryMappings[category]) throw new Error(`Invalid category: ${category} please use one of ${Object.keys(categoryMappings).join(', ')}`);
-  const cardProvider = (props.type || defaultType).charAt(0).toUpperCase() + (props.type || defaultType).slice(1) as PaymentType;
+  const formatedType = props.type?.toLowerCase() ?? defaultType;
+  const cardProvider = (formatedType || defaultType).charAt(0).toUpperCase() + (formatedType || defaultType).slice(1) as PaymentType;
 
   const categoryComponents = categoryMappings[category]; 
 

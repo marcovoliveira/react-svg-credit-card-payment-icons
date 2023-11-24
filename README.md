@@ -58,7 +58,7 @@ If the type does not exist, the default setting is generic.
 |`unionpay`   |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/src/icons/flat-rounded/unionpay.svg" width=80/>
 |`visa`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/src/icons/flat-rounded/visa.svg" width=80/>
 |`generic`  |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/src/icons/flat-rounded/generic.svg" width=80/>
-|`cvv`  |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/src/icons/flat-rounded/code.svg" width=80/>
+|`code`  |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/src/icons/flat-rounded/code.svg" width=80/>
 
 Images from [`aaronfagan/svg-credit-card-payment-icons`](https://github.com/aaronfagan/svg-credit-card-payment-icons)
 

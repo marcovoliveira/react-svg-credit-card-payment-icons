@@ -1,5 +1,11 @@
 # react-svg-credit-card-payment-icons
 
+## 2.1.2
+
+### Patch Changes
+
+- fix docs add string formatting
+
 ## 2.1.1
 
 ### Patch Changes
