@@ -1,5 +1,11 @@
 # react-svg-credit-card-payment-icons
 
+## 2.1.1
+
+### Patch Changes
+
+- storybook fix
+
 ## 2.1.0
 
 ### Minor Changes

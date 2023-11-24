@@ -9,6 +9,12 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    options: {
+      storySort: {
+        method: 'alphabetical',
+        order: ['Components', ['Payment Cards', 'Test your card']],
+      },
+    },
   },
 };
 
