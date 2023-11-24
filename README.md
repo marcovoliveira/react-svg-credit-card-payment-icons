@@ -5,8 +5,10 @@
 [![GitHub stars](https://img.shields.io/github/stars/marcovoliveira/react-svg-credit-card-payment-icons.svg?style=social)](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons)
 [![](https://img.shields.io/badge/-Contribute%20with%20a%20%E2%98%85!-%23ffd700)](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons)
 
-# SVG Credit Card & Payment Icons: 6 Styles, 80 Icons
-A collection of SVG based credit card logo icons.
+# SVG Credit Card & Payment Icons: 6 Styles, 80 Icons for React ⚛️
+A collection of SVG based credit card logo icons. 
+React componnent with Typescript support.
+
 
 
 ## 💿 Installation
@@ -22,13 +24,13 @@ yarn add react-svg-credit-card-payment-icons
 ### 📦 Usage
 
 ```tsx
-import PaymentIcon from 'react-svg-credit-card-payment-icons';
+import { PaymentIcon } from 'react-svg-credit-card-payment-icons';
 ```
 ....
 ```tsx
 const App = () => {
   return (
-    <PaymentIcon type="visa" format="flatRounded" width={80} />
+    <PaymentIcon type="visa" format="flatRounded" width={100} />
   );
 };
 ```
@@ -71,8 +73,6 @@ If the format is not specified, the default setting is flat.
 |`logoBorder`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/src/icons/logo-border/mastercard.svg" width=80/>
 |`mono`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/src/icons/mono/mastercard.svg" width=80/>
 |`monoOutline`    |<img src="https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/raw/main/src/icons/mono-outline/mastercard.svg" width=80/>
-
-
 
 
 * Specify either width or height; there's no requirement to define both. The aspect ratio is preset at 780:500 for SVGs. If neither width nor height is defined, width will default to 40.

@@ -1,0 +1,26 @@
+.custom-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.grid-item {
+  border: 1px solid #ccc;
+  padding: 16px;
+  text-align: center;
+  background-color: #eaf6ff;
+  border-radius: 8px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.grid-item > div {
+  margin-bottom: 8px;
+}
+
+span {
+  font-family: sans-serif; 
+  font-size: 16px;
+  font-weight: bold;
+  color: #333; 
+}

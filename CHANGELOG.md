@@ -1,5 +1,12 @@
 # react-svg-credit-card-payment-icons
 
+## 2.1.0
+
+### Minor Changes
+
+- 87db82a: Update svg
+- Storbook demo app
+
 ## 2.0.0
 
 ### Major Changes

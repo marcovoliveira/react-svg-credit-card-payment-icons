@@ -2,7 +2,7 @@
   "include": [
     "src/**/*",
     "src/custom.d.ts",
-    "src/PaymentIcon.stories.tsx"
+    "src/stories/PaymentIcon.stories.tsx"
   ],
   "exclude": [
     "dist",
