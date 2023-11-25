@@ -1,5 +1,11 @@
 # react-svg-credit-card-payment-icons
 
+## 2.1.3
+
+### Patch Changes
+
+- update readme
+
 ## 2.1.2
 
 ### Patch Changes
