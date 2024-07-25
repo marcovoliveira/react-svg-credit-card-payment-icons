@@ -1,7 +1,7 @@
 {
   "name": "react-svg-credit-card-payment-icons",
   "license": "MIT",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "React components library with 6 styles, 80 icons, TypeScript support, and a variety of types and formats for easy integration into React applications.",
   "repository": {
     "type": "git",
@@ -43,7 +43,7 @@
     "@babel/preset-env": "^7.23.3",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
-    "@changesets/cli": "^2.26.2",
+    "@changesets/cli": "^2.27.7",
     "@storybook/addon-essentials": "^7.5.3",
     "@storybook/addon-interactions": "^7.5.3",
     "@storybook/addon-links": "^7.5.3",
