@@ -8,7 +8,7 @@ export default {
 export const Default = {
   args: {
     width: 400,
-    type: 'generic',
-    format: 'flatRounded',
+    type: 'mastercard',
+    format: 'monoOutline',
   },
 };

@@ -1,5 +1,11 @@
 # react-svg-credit-card-payment-icons
 
+## 3.0.0
+
+### Major Changes
+
+- Thanks to Adrian Rubio we have mastercard, maestro and visa new cards frollowing brand guidelines, also added code front, code and generic to logo-border and logo types. PaymentTypesExtended is deprecated and you should use PaymentTypes type that contains the same set of types.
+
 ## 2.1.3
 
 ### Patch Changes

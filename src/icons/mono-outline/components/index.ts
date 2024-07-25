@@ -1,5 +1,6 @@
 export { default as Alipay } from "./Alipay";
 export { default as Amex } from "./Amex";
+export { default as Americanexpress } from "./Amex";
 export { default as CodeFront } from "./CodeFront";
 export { default as Code } from "./Code";
 export { default as Diners } from "./Diners";
