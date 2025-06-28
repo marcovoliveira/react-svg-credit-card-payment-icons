@@ -5,7 +5,8 @@
 [![​npm​](https://img.shields.io/npm/dm/react-svg-credit-card-payment-icons)](https://www.npmjs.com/package/react-svg-credit-card-payment-icons)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![GitHub stars](https://img.shields.io/github/stars/marcovoliveira/react-svg-credit-card-payment-icons.svg?style=social)](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons)
-[![](https://img.shields.io/badge/-Contribute%20with%20a%20%E2%98%85!-%23ffd700)](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons)
+[![](https://img.shields.io/badge/-Contribute%20with%20a%20%E2%98%85!-%23ffd700)](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons)  
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/marcovoliveira)
 
 # SVG Credit Card & Payment Icons: 6 Styles, 80 Icons for React ⚛️
 A collection of SVG based credit card logo icons. 
@@ -37,6 +38,82 @@ const App = () => {
   );
 };
 ```
+
+### 🔧 Card Utilities
+
+As of version 4, the package includes powerful card detection and validation utilities:
+
+```tsx
+import { 
+  detectCardType, 
+  validateCardNumber, 
+  formatCardNumber,
+  maskCardNumber,
+  isCardNumberPotentiallyValid 
+} from 'react-svg-credit-card-payment-icons';
+
+// Detect card type from number
+const cardType = detectCardType('4242424242424242'); // Returns 'Visa'
+
+// Validate card number using Luhn algorithm
+const isValid = validateCardNumber('4242424242424242'); // Returns true
+
+// Format card number with appropriate spacing
+const formatted = formatCardNumber('4242424242424242'); // Returns '4242 4242 4242 4242'
+
+// Mask card number (shows only last 4 digits)
+const masked = maskCardNumber('4242424242424242'); // Returns '**** **** **** 4242'
+
+// Check if card number is potentially valid (correct length, etc.)
+const isPotentiallyValid = isCardNumberPotentiallyValid('4242424242424242'); // Returns true
+```
+
+#### Available Utility Functions:
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `detectCardType(cardNumber)` | Detects card type from number | `detectCardType('4242...') // 'Visa'` |
+| `validateCardNumber(cardNumber)` | Validates using Luhn algorithm | `validateCardNumber('4242...') // true` |
+| `formatCardNumber(cardNumber)` | Formats with appropriate spacing | `formatCardNumber('4242...') // '4242 4242 4242 4242'` |
+| `maskCardNumber(cardNumber)` | Masks all but last 4 digits | `maskCardNumber('4242...') // '**** **** **** 4242'` |
+| `isCardNumberPotentiallyValid(cardNumber)` | Checks if potentially valid | `isCardNumberPotentiallyValid('4242') // false` |
+| `validateCardForType(cardNumber, type)` | Validates for specific card type | `validateCardForType('4242...', 'Visa') // true` |
+| `getCardLengthRange(cardType)` | Gets min/max length for card type | `getCardLengthRange('Visa') // {min: 13, max: 19}` |
+| `sanitizeCardNumber(cardNumber)` | Removes non-digit characters | `sanitizeCardNumber('4242-4242') // '42424242'` |
+
+#### Complete Example with Card Input:
+
+```tsx
+import React, { useState } from 'react';
+import { 
+  PaymentIcon, 
+  detectCardType, 
+  validateCardNumber, 
+  formatCardNumber 
+} from 'react-svg-credit-card-payment-icons';
+
+function CardInput() {
+  const [cardNumber, setCardNumber] = useState('');
+  const cardType = detectCardType(cardNumber);
+  const isValid = validateCardNumber(cardNumber);
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={cardNumber}
+        onChange={(e) => setCardNumber(e.target.value)}
+        placeholder="Enter card number"
+      />
+      <PaymentIcon type={cardType} width={40} />
+      <div>Type: {cardType}</div>
+      <div>Valid: {isValid ? 'Yes' : 'No'}</div>
+      <div>Formatted: {formatCardNumber(cardNumber)}</div>
+    </div>
+  );
+}
+```
+
 ## [Types and Formats](https://marcovoliveira.github.io/react-svg-credit-card-payment-icons/?path=/story/test-your-card--default&args=type:Generic)
 
 ### Available `types` and their images:

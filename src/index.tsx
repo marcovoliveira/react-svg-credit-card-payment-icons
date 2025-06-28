@@ -69,4 +69,15 @@ export function PaymentIcon(props: PaymentIconProps): JSX.Element {
  />;
 }
 
+export {
+  detectCardType,
+  validateCardNumber,
+  formatCardNumber,
+  validateCardForType,
+  getCardLengthRange,
+  isCardNumberPotentiallyValid,
+  maskCardNumber,
+  sanitizeCardNumber
+} from './utils/cardUtils';
+
 
