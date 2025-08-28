@@ -15,3 +15,4 @@ export { default as Mir } from "./Mir";
 export { default as Paypal } from "./Paypal";
 export { default as Unionpay } from "./Unionpay";
 export { default as Visa } from "./Visa";
+export { default as Swish } from "./Swish";
