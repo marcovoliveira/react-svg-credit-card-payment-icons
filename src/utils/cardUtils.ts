@@ -1,3 +1,4 @@
+import { Swish } from '../icons/mono-outline/components';
 import type { PaymentType } from '../index';
 
 // Card number patterns for different card types
@@ -18,7 +19,8 @@ const cardPatterns: Record<PaymentType, RegExp[]> = {
   Alipay: [], // Alipay doesn't have card numbers
   Generic: [],
   Code: [],
-  CodeFront: []
+  CodeFront: [],
+  Swish: [],
 };
 
 // IIN (Issuer Identification Number) ranges for faster detection
@@ -39,7 +41,8 @@ const iinPatterns: Record<PaymentType, string[]> = {
   Alipay: [],
   Generic: [],
   Code: [],
-  CodeFront: []
+  CodeFront: [],
+  Swish: []
 };
 
 /**
