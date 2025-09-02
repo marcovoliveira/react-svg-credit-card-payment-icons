@@ -24,26 +24,26 @@ const cardPatterns: Record<PaymentType, RegExp[]> = {
 };
 
 // IIN (Issuer Identification Number) ranges for faster detection
-const iinPatterns: Record<PaymentType, string[]> = {
-  Visa: ['4'],
-  Mastercard: ['51', '52', '53', '54', '55', '222', '223', '224', '225', '226', '227', '228', '229', '23', '24', '25', '26', '27'],
-  Amex: ['34', '37'],
-  Discover: ['6011', '622', '64', '65'],
-  Diners: ['300', '301', '302', '303', '304', '305', '36', '38'],
-  Jcb: ['35', '2131', '1800'],
-  Unionpay: ['62'],
-  Maestro: ['50', '56', '57', '58', '6304', '6390', '67'],
-  Elo: ['401178', '401179', '431274', '438935', '451416', '457393', '457631', '457632', '504175', '506699', '5067', '627780', '636297', '636368', '636369'],
-  Hiper: ['606282', '3841'],
-  Hipercard: ['606282', '3841'],
-  Mir: ['2200', '2201', '2202', '2203', '2204'],
-  Paypal: [],
-  Alipay: [],
-  Generic: [],
-  Code: [],
-  CodeFront: [],
-  Swish: []
-};
+const iinPatterns: [PaymentType, string[]][] = [
+  ['Elo', ['401178', '401179', '431274', '438935', '451416', '457393', '457631', '457632', '504175', '506699', '5067', '627780', '636297', '636368', '636369']],
+  ['Hipercard', ['606282', '3841']],
+  ['Hiper', ['606282', '3841']],
+  ['Discover', ['6011', '622', '64', '65']],
+  ['Unionpay', ['62']],
+  ['Visa', ['4']],
+  ['Mastercard', ['51', '52', '53', '54', '55', '222', '223', '224', '225', '226', '227', '228', '229', '23', '24', '25', '26', '27']],
+  ['Amex', ['34', '37']],
+  ['Diners', ['300', '301', '302', '303', '304', '305', '36', '38']],
+  ['Jcb', ['35', '2131', '1800']],
+  ['Maestro', ['50', '56', '57', '58', '6304', '6390', '67']],
+  ['Mir', ['2200', '2201', '2202', '2203', '2204']],
+  ['Paypal', []],
+  ['Alipay', []],
+  ['Generic', []],
+  ['Code', []],
+  ['CodeFront', []],
+  ['Swish', []]
+];
 
 /**
  * Removes all non-digit characters from a card number
@@ -62,14 +62,20 @@ export function detectCardType(cardNumber: string): PaymentType {
     return 'Generic';
   }
 
-  // Check IIN patterns for faster detection
-  for (const cardType in iinPatterns) {
-    const patterns = iinPatterns[cardType as PaymentType];
+  let bestMatch: PaymentType | null = null;
+  let longestPattern = 0;
+
+  for (const [cardType, patterns] of iinPatterns) {
     for (const pattern of patterns) {
-      if (sanitized.startsWith(pattern)) {
-        return cardType as PaymentType;
+      if (sanitized.startsWith(pattern) && pattern.length > longestPattern) {
+        bestMatch = cardType;
+        longestPattern = pattern.length;
       }
     }
+  }
+
+  if (bestMatch) {
+    return bestMatch;
   }
 
   // Fallback to full regex validation for edge cases
@@ -209,8 +215,24 @@ export function maskCardNumber(cardNumber: string, maskChar: string = '*'): stri
     return sanitized;
   }
   
-  const lastFour = sanitized.slice(-4);
-  const maskedPortion = maskChar.repeat(sanitized.length - 4);
+  const formatted = formatCardNumber(sanitized);
+  const numToMask = sanitized.length - 4;
+  let masked = '';
+  let digitsSeen = 0;
+
+  for (let i = 0; i < formatted.length; i++) {
+    const char = formatted[i];
+    if (char !== ' ') {
+      digitsSeen++;
+      if (digitsSeen <= numToMask) {
+        masked += maskChar;
+      } else {
+        masked += char;
+      }
+    } else {
+      masked += ' ';
+    }
+  }
   
-  return formatCardNumber(maskedPortion + lastFour);
+  return masked;
 }
