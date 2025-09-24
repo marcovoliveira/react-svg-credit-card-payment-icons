@@ -1,5 +1,11 @@
 # react-svg-credit-card-payment-icons
 
+## 4.2.0
+
+### Minor Changes
+
+- 3f4fd3b: add Swish payment provider
+
 ## 3.1.1
 
 ### Patch Changes
