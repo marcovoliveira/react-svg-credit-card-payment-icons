@@ -1,5 +1,11 @@
 # react-svg-credit-card-payment-icons
 
+## 4.2.1
+
+### Patch Changes
+
+- fix: add utils export for card utility functions
+
 ## 4.2.0
 
 ### Minor Changes
