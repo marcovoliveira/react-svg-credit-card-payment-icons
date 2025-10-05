@@ -22,9 +22,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.tsx --format cjs,esm --dts --clean",
+    "build": "tsup",
     "lint": "tsc",
+    "prestorybook": "rm -rf generated/icons && tsx scripts/build-storybook-components.ts",
     "storybook": "storybook dev -p 6006",
+    "prebuild-storybook": "rm -rf generated/icons && tsx scripts/build-storybook-components.ts",
     "build-storybook": "storybook build -o docs-build"
   },
   "keywords": [
@@ -47,23 +49,23 @@
     "payment"
   ],
   "devDependencies": {
-    "@babel/preset-env": "^7.23.3",
-    "@babel/preset-react": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.3",
-    "@changesets/cli": "^2.27.7",
+    "@changesets/cli": "^2.29.7",
     "@storybook/addon-docs": "^9.1.10",
     "@storybook/addon-links": "^9.1.10",
     "@storybook/addon-onboarding": "^9.1.10",
     "@storybook/react": "^9.1.10",
     "@storybook/react-vite": "^9.1.10",
     "@svgr/cli": "^8.1.0",
-    "@types/react": "^18.2.38",
+    "@svgr/core": "^8.1.0",
+    "@types/react": "^19.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sb": "^9.1.10",
     "storybook": "^9.1.10",
-    "tsup": "^8.0.1",
-    "typescript": "^5.3.2"
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vite-plugin-svgr": "^4.5.0"
   },
   "peerDependencies": {
     "react": ">=16",

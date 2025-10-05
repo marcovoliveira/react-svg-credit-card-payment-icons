@@ -12,3 +12,6 @@ docs/
 # Lock files for other package managers (pnpm is used)
 package-lock.json
 yarn.lock
+
+# Generated component wrappers (only for Storybook dev mode)
+/generated/icons/

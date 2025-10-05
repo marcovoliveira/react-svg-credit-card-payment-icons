@@ -30,7 +30,7 @@ export default function CardUtilsDemo() {
   const testCards = [
     { type: 'Visa', number: '4242424242424242' },
     { type: 'Mastercard', number: '5555555555554444' },
-    { type: 'Amex', number: '378282246310005' },
+    { type: 'Americanexpress', number: '378282246310005' },
     { type: 'Discover', number: '6011111111111117' },
     { type: 'Diners', number: '30569309025904' },
     { type: 'JCB', number: '3530111333300000' },

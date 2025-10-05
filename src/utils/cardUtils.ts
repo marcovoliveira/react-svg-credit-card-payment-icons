@@ -1,11 +1,10 @@
-import { Swish } from '../icons/mono-outline/components';
 import type { PaymentType } from '../index';
 
 // Card number patterns for different card types
 const cardPatterns: Record<PaymentType, RegExp[]> = {
   Visa: [/^4[0-9]{12}(?:[0-9]{3})?$/],
   Mastercard: [/^5[1-5][0-9]{14}$/, /^2(?:2(?:2[1-9]|[3-9][0-9])|[3-6][0-9][0-9]|7(?:[01][0-9]|20))[0-9]{12}$/],
-  Amex: [/^3[47][0-9]{13}$/],
+  Americanexpress: [/^3[47][0-9]{13}$/],
   Discover: [/^6(?:011|5[0-9]{2})[0-9]{12}$/],
   Diners: [/^3[0689][0-9]{11}$/, /^30[0-5][0-9]{11}$/],
   Jcb: [/^(?:2131|1800|35[0-9]{3})[0-9]{11}$/],
@@ -27,7 +26,7 @@ const cardPatterns: Record<PaymentType, RegExp[]> = {
 const iinPatterns: Record<PaymentType, string[]> = {
   Visa: ['4'],
   Mastercard: ['51', '52', '53', '54', '55', '222', '223', '224', '225', '226', '227', '228', '229', '23', '24', '25', '26', '27'],
-  Amex: ['34', '37'],
+  Americanexpress: ['34', '37'],
   Discover: ['6011', '622', '64', '65'],
   Diners: ['300', '301', '302', '303', '304', '305', '36', '38'],
   Jcb: ['35', '2131', '1800'],
@@ -42,7 +41,7 @@ const iinPatterns: Record<PaymentType, string[]> = {
   Generic: [],
   Code: [],
   CodeFront: [],
-  Swish: []
+  Swish: [],
 };
 
 /**
@@ -125,7 +124,7 @@ export function formatCardNumber(cardNumber: string): string {
   
   // Different formatting patterns for different card types
   switch (cardType) {
-    case 'Amex':
+    case 'Americanexpress':
       // American Express: 4-6-5 format (e.g., 3782 822463 10005)
       return sanitized.replace(/(\d{4})(\d{6})(\d{5})/, '$1 $2 $3');
     case 'Diners':
@@ -156,7 +155,7 @@ export function validateCardForType(cardNumber: string, cardType: PaymentType): 
  */
 export function getCardLengthRange(cardType: PaymentType): { min: number; max: number } | null {
   switch (cardType) {
-    case 'Amex':
+    case 'Americanexpress':
       return { min: 15, max: 15 };
     case 'Diners':
       return { min: 14, max: 14 };
