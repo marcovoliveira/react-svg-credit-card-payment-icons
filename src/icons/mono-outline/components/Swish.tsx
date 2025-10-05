@@ -10,7 +10,7 @@ const SvgSwish = (props: SVGProps<SVGSVGElement>) => (
     viewBox="0 0 780 500"
     {...props}
   >
-    <style>{".st3{fill-rule:evenodd;clip-rule:evenodd;fill:#393939}"}</style>
+    <style>{".st3{fillRule:evenodd;clipRule:evenodd;fill:#393939}"}</style>
     <path
       d="M55.2 490C30.3 490 10 469.7 10 444.8V55.2C10 30.3 30.3 10 55.2 10h669.5c25 0 45.3 20.3 45.3 45.2v389.5c0 25-20.3 45.3-45.2 45.3H55.2z"
       style={{

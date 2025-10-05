@@ -12,7 +12,7 @@ const SvgHiper = (props: SVGProps<SVGSVGElement>) => (
   >
     <style>
       {
-        ".hiper_svg__st2,.hiper_svg__st3{fill:#393939}.hiper_svg__st3{fill-rule:evenodd;clip-rule:evenodd}"
+        ".hiper_svg__st2,.hiper_svg__st3{fill:#393939}.hiper_svg__st3{fillRule:evenodd;clipRule:evenodd}"
       }
     </style>
     <path
