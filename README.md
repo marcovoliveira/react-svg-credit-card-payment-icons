@@ -1,4 +1,4 @@
-# React SVG Card Payment Icons 
+# React SVG Card Payment Icons
 
 [![npm](https://img.shields.io/npm/v/react-svg-credit-card-payment-icons)](https://www.npmjs.com/package/react-svg-credit-card-payment-icons)
 [![TypeScript](https://badgen.net/npm/types/env-var)](http://www.typescriptlang.org/)
@@ -9,7 +9,7 @@
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/marcovoliveira)
 
 # SVG Credit Card & Payment Icons: 6 Styles, 80 Icons for React ⚛️
-A collection of SVG based credit card logo icons. 
+A collection of SVG based credit card logo icons.
 React componnent with Typescript support.
 
 ### [Live Demo](https://marcovoliveira.github.io/react-svg-credit-card-payment-icons/?path=/docs/payment-cards--docs)
@@ -21,9 +21,16 @@ React componnent with Typescript support.
 1) Install this package:
 ```bash
 npm install react-svg-credit-card-payment-icons
-# or
+```
+or
+```bash
 yarn add react-svg-credit-card-payment-icons
 ```
+or
+```bash
+pnpm add react-svg-credit-card-payment-icons
+```
+
 
 ### 📦 Usage
 
@@ -146,7 +153,7 @@ Images from [`aaronfagan/svg-credit-card-payment-icons`](https://github.com/aaro
 
 ### Available `formats`:
 
-If the format is not specified, the default setting is flat. 
+If the format is not specified, the default setting is flat.
 
 |Format    |Image
 |---    |---
@@ -163,3 +170,26 @@ If the format is not specified, the default setting is flat.
 * The component also allows all the properties (props) of the Svg component, including attributes like style.
 
 * If an invalid type is provided, the default setting is generic.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request on GitHub.
+
+### Development Setup
+
+This project uses [pnpm](https://pnpm.io/) as its package manager for local development and CI/CD.
+
+```bash
+# Install pnpm if you don't have it
+npm install -g pnpm
+
+# Install dependencies
+pnpm install
+
+# Run linting
+pnpm run lint
+
+# Build the project
+pnpm run build
+```
+

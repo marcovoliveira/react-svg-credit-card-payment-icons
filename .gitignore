@@ -8,3 +8,7 @@ dist/
 storybook-static
 
 docs/
+
+# Lock files for other package managers (pnpm is used)
+package-lock.json
+yarn.lock
