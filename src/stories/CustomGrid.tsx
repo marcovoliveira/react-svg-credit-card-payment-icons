@@ -1,5 +1,5 @@
-import React, { SVGProps } from 'react';
-import './CustomGrid.css'; // Import the CSS file
+import React, { JSX, SVGProps } from 'react';
+import './CustomGrid.css';
 
 export interface GridProps {
   Components: { [key: string]: (props: SVGProps<SVGSVGElement>) => JSX.Element };

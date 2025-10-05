@@ -1,10 +1,10 @@
 import React, { JSX } from 'react';
-import * as FlatComponents from './icons-generated/flat';
-import * as FlatRoundedComponents from './icons-generated/flat-rounded';
-import * as LogoComponents from './icons-generated/logo';
-import * as LogoBorderComponents from './icons-generated/logo-border';
-import * as MonoComponents from './icons-generated/mono';
-import * as MonoOutlineComponents from './icons-generated/mono-outline';
+import * as FlatComponents from '../generated/icons/flat';
+import * as FlatRoundedComponents from '../generated/icons/flat-rounded';
+import * as LogoComponents from '../generated/icons/logo';
+import * as LogoBorderComponents from '../generated/icons/logo-border';
+import * as MonoComponents from '../generated/icons/mono';
+import * as MonoOutlineComponents from '../generated/icons/mono-outline';
 import type { SVGProps } from "react";
 
 export type SVGComponentProps = {

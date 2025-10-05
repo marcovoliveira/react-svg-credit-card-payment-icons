@@ -22,11 +22,15 @@
     "dist"
   ],
   "scripts": {
+    "generate": "rm -rf generated/icons && tsx scripts/generate-components.ts",
+    "pretypecheck": "pnpm run generate",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "prebuild": "pnpm run generate",
     "build": "tsup",
-    "lint": "tsc",
-    "prestorybook": "rm -rf generated/icons && tsx scripts/build-storybook-components.ts",
+    "prestorybook": "pnpm run generate",
     "storybook": "storybook dev -p 6006",
-    "prebuild-storybook": "rm -rf generated/icons && tsx scripts/build-storybook-components.ts",
+    "prebuild-storybook": "pnpm run generate",
     "build-storybook": "storybook build -o docs-build"
   },
   "keywords": [
@@ -50,6 +54,7 @@
   ],
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
+    "@eslint/js": "^9.37.0",
     "@storybook/addon-docs": "^9.1.10",
     "@storybook/addon-links": "^9.1.10",
     "@storybook/addon-onboarding": "^9.1.10",
@@ -58,6 +63,10 @@
     "@svgr/cli": "^8.1.0",
     "@svgr/core": "^8.1.0",
     "@types/react": "^19.2.0",
+    "eslint": "^9.37.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.4.0",
+    "jiti": "^2.6.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sb": "^9.1.10",
@@ -65,6 +74,7 @@
     "tsup": "^8.5.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.45.0",
     "vite-plugin-svgr": "^4.5.0"
   },
   "peerDependencies": {
