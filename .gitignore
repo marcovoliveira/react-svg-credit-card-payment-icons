@@ -6,5 +6,5 @@ dist/
 .out
 .storybook-out
 storybook-static
-
+docs-build/
 docs/
