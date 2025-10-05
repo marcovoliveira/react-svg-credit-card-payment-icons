@@ -2,12 +2,13 @@
 
 import fs from 'fs';
 import path from 'path';
+import { transform } from '@svgr/core';
 
 const STYLES = ['flat', 'flat-rounded', 'logo', 'logo-border', 'mono', 'mono-outline'] as const;
 const ICONS_DIR = 'src/icons';
 const TEMP_DIR = 'generated/icons';
 
-type Style = typeof STYLES[number];
+type Style = (typeof STYLES)[number];
 
 function pascalCase(str: string): string {
   return str
@@ -16,15 +17,14 @@ function pascalCase(str: string): string {
 }
 
 function getVendorDirectories(): string[] {
-  return fs.readdirSync(ICONS_DIR)
-    .filter(file => {
-      const isDir = fs.statSync(path.join(ICONS_DIR, file)).isDirectory();
-      const isStyleDir = STYLES.includes(file as Style);
-      return isDir && !isStyleDir;
-    });
+  return fs.readdirSync(ICONS_DIR).filter((file) => {
+    const isDir = fs.statSync(path.join(ICONS_DIR, file)).isDirectory();
+    const isStyleDir = STYLES.includes(file as Style);
+    return isDir && !isStyleDir;
+  });
 }
 
-function generateComponent(vendor: string, style: Style): string | undefined {
+async function generateComponent(vendor: string, style: Style): Promise<string | undefined> {
   const svgFile = `${vendor}-${style}.svg`;
   const svgPath = path.join(ICONS_DIR, vendor, svgFile);
 
@@ -37,21 +37,46 @@ function generateComponent(vendor: string, style: Style): string | undefined {
     fs.mkdirSync(tempDir, { recursive: true });
   }
 
-  const relativeImport = path
-    .relative(tempDir, path.join(ICONS_DIR, vendor, svgFile))
-    .replace(/\\/g, '/');
+  // Read SVG file and compile it to React component with inline styles
+  const svgContent = fs.readFileSync(svgPath, 'utf-8');
+  let componentCode = await transform(
+    svgContent,
+    {
+      plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx', '@svgr/plugin-prettier'],
+      typescript: true,
+      dimensions: false,
+      expandProps: 'end',
+      svgoConfig: {
+        plugins: [
+          {
+            name: 'removeAttrs',
+            params: {
+              attrs: ['enable-background'],
+            },
+          },
+          {
+            name: 'inlineStyles',
+            params: {
+              onlyMatchedOnce: false,
+            },
+          },
+          {
+            name: 'prefixIds',
+            params: {
+              prefix: `${vendor.toLowerCase()}-${style}`,
+            },
+          },
+        ],
+      },
+    },
+    { componentName }
+  );
 
-  const component = `import React from "react";
-import type { SVGProps } from "react";
-import ${componentName}Svg from "${relativeImport}?react";
-
-const ${componentName} = (props: SVGProps<SVGSVGElement>) => <${componentName}Svg {...props} />;
-
-export default ${componentName};
-`;
+  // Remove enableBackground style property that causes TypeScript errors
+  componentCode = componentCode.replace(/\s+style=\{\{\s+enableBackground:.*?\}\}/gs, '');
 
   const componentPath = path.join(tempDir, `${componentName}.tsx`);
-  fs.writeFileSync(componentPath, component);
+  fs.writeFileSync(componentPath, componentCode);
 
   return componentName;
 }
@@ -60,39 +85,39 @@ function generateIndexFile(style: Style, components: string[]): void {
   const tempDir = path.join(TEMP_DIR, style);
   const uniqueComponents = [...new Set(components)].sort();
 
-  const indexContent = uniqueComponents
-    .map(name => `export { default as ${name} } from './${name}';`)
-    .join('\n') + '\n';
+  const indexContent =
+    uniqueComponents.map((name) => `export { default as ${name} } from './${name}';`).join('\n') +
+    '\n';
 
   fs.writeFileSync(path.join(tempDir, 'index.ts'), indexContent);
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const vendors = getVendorDirectories();
   const componentsByStyle: Record<Style, string[]> = {
-    'flat': [],
+    flat: [],
     'flat-rounded': [],
-    'logo': [],
+    logo: [],
     'logo-border': [],
-    'mono': [],
+    mono: [],
     'mono-outline': [],
   };
 
-  vendors.forEach(vendor => {
-    STYLES.forEach(style => {
-      const componentName = generateComponent(vendor, style);
+  for (const vendor of vendors) {
+    for (const style of STYLES) {
+      const componentName = await generateComponent(vendor, style);
       if (componentName) {
         componentsByStyle[style].push(componentName);
         console.log(`✓ ${style}/${componentName}.tsx`);
       }
-    });
-  });
+    }
+  }
 
-  STYLES.forEach(style => {
+  STYLES.forEach((style) => {
     generateIndexFile(style, componentsByStyle[style]);
   });
 
-  console.log('\n✅ All component wrappers generated!');
+  console.log('\n✅ All components generated with inline styles!');
 }
 
 main();

@@ -1,21 +1,11 @@
 {
-  "include": [
-    "src/**/*",
-    "src/stories/PaymentIcon.stories.tsx"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules",
-    "src/**/*.test.ts"
-  ],
+  "include": ["src/**/*", "src/stories/PaymentIcon.stories.tsx", "scripts/**/*"],
+  "exclude": ["dist", "node_modules", "src/**/*.test.ts"],
   "compilerOptions": {
     "jsx": "react",
     "target": "es2022",
     "module": "commonjs",
-    "lib": [
-      "es2022",
-      "dom"
-    ],
+    "lib": ["es2022", "dom"],
     "declaration": true,
     "outDir": "dist",
     "noEmit": true,

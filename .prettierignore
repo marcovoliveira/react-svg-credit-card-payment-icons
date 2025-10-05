@@ -1,0 +1,19 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+generated
+docs-build
+storybook-static
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Coverage
+coverage
+
+# Cache
+.cache

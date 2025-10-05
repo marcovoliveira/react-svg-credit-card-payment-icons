@@ -5,7 +5,7 @@ import * as LogoComponents from '../generated/icons/logo';
 import * as LogoBorderComponents from '../generated/icons/logo-border';
 import * as MonoComponents from '../generated/icons/mono';
 import * as MonoOutlineComponents from '../generated/icons/mono-outline';
-import type { SVGProps } from "react";
+import type { SVGProps } from 'react';
 
 export type SVGComponentProps = {
   width?: number;
@@ -28,12 +28,10 @@ export type PaymentType = keyof typeof FlatComponents &
   keyof typeof MonoComponents &
   keyof typeof MonoOutlineComponents;
 
-
 type PaymentCategory = keyof typeof categoryMappings;
 
 // @deprecated Use PaymentType instead
 export type PaymentTypeExtended = PaymentType | 'Generic' | 'Code';
-
 
 const defaultType = 'generic' as PaymentType;
 const defaultCategory = 'flat';
@@ -49,9 +47,12 @@ type PaymentIconProps = {
 
 export function PaymentIcon(props: PaymentIconProps): JSX.Element {
   const category = (props.format || defaultCategory) as PaymentCategory;
-  if(!categoryMappings[category]) throw new Error(`Invalid category: ${category} please use one of ${Object.keys(categoryMappings).join(', ')}`);
+  if (!categoryMappings[category])
+    throw new Error(
+      `Invalid category: ${category} please use one of ${Object.keys(categoryMappings).join(', ')}`
+    );
   const formatedType = props.type?.toLowerCase() ?? defaultType;
-  const sanitizedType = (formatedType || defaultType).replace(/[-_]/g, "");
+  const sanitizedType = (formatedType || defaultType).replace(/[-_]/g, '');
   let normalizedType = sanitizedType.charAt(0).toUpperCase() + sanitizedType.slice(1);
 
   // Alias: Amex -> Americanexpress
@@ -62,18 +63,14 @@ export function PaymentIcon(props: PaymentIconProps): JSX.Element {
   const cardProvider = normalizedType as PaymentType;
   const categoryComponents = categoryMappings[category];
 
-  const Component: (props: SVGProps<SVGSVGElement>) => JSX.Element = categoryComponents[cardProvider] ?? FlatRoundedComponents.Generic;
+  const Component: (props: SVGProps<SVGSVGElement>) => JSX.Element =
+    categoryComponents[cardProvider] ?? FlatRoundedComponents.Generic;
 
-  const width = props.width ?? (props.height ? (props.height as number) * aspectRatio : defaultWidth);
+  const width =
+    props.width ?? (props.height ? (props.height as number) * aspectRatio : defaultWidth);
   const height = props.height ?? (width as number) / aspectRatio;
 
-  return <Component
-    {...props}
-    fill='#000'
-    width={width}
-    height={height}
-    viewBox="0 0 780 500"
- />;
+  return <Component {...props} width={width} height={height} viewBox="0 0 780 500" />;
 }
 
 export {
@@ -84,7 +81,5 @@ export {
   getCardLengthRange,
   isCardNumberPotentiallyValid,
   maskCardNumber,
-  sanitizeCardNumber
+  sanitizeCardNumber,
 } from './utils/cardUtils';
-
-

@@ -19,7 +19,7 @@ export default [
     },
   },
   {
-    ignores: ['dist/', 'generated/', 'docs-build/', 'storybook-static/', 'node_modules/'],
+    ignores: ['dist/', 'generated/', 'docs-build/', 'storybook-static/', 'node_modules/', 'coverage/'],
   },
   {
     rules: {
