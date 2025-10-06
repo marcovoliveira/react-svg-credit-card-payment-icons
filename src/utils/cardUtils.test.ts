@@ -30,6 +30,37 @@ describe('cardUtils', () => {
       expect(detectCardType('6011000000000004')).toBe('Discover');
     });
 
+    it('detects Diners Club', () => {
+      expect(detectCardType('30000000000000')).toBe('Diners');
+      expect(detectCardType('36000000000000')).toBe('Diners');
+    });
+
+    it('detects JCB', () => {
+      expect(detectCardType('3530111333300000')).toBe('Jcb');
+    });
+
+    it('detects UnionPay', () => {
+      expect(detectCardType('6200000000000005')).toBe('Unionpay');
+    });
+
+    it('detects Maestro', () => {
+      expect(detectCardType('6304000000000000')).toBe('Maestro');
+    });
+
+    it('detects Elo', () => {
+      expect(detectCardType('5066991111111118')).toBe('Elo');
+    });
+
+    it('detects Hiper/Hipercard', () => {
+      // Both have the same pattern, so either detection is fine
+      const result = detectCardType('6062828888666688');
+      expect(result === 'Hiper' || result === 'Hipercard').toBe(true);
+    });
+
+    it('detects Mir', () => {
+      expect(detectCardType('2200000000000000')).toBe('Mir');
+    });
+
     it('returns Generic for unknown patterns', () => {
       expect(detectCardType('9999')).toBe('Generic');
       expect(detectCardType('')).toBe('Generic');

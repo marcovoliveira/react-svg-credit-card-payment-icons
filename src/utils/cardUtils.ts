@@ -28,6 +28,7 @@ const cardPatterns: Record<PaymentType, RegExp[]> = {
 };
 
 // IIN (Issuer Identification Number) ranges for faster detection
+// Use a longest-match algorithm to handle overlapping patterns
 const iinPatterns: Record<PaymentType, string[]> = {
   Visa: ['4'],
   Mastercard: [
@@ -101,14 +102,23 @@ export function detectCardType(cardNumber: string): PaymentType {
     return 'Generic';
   }
 
-  // Check IIN patterns for faster detection
+  // Check IIN patterns for faster detection using longest match
+  let bestMatch: { type: PaymentType; length: number } | null = null;
+
   for (const cardType in iinPatterns) {
     const patterns = iinPatterns[cardType as PaymentType];
     for (const pattern of patterns) {
       if (sanitized.startsWith(pattern)) {
-        return cardType as PaymentType;
+        // Keep the longest matching IIN
+        if (!bestMatch || pattern.length > bestMatch.length) {
+          bestMatch = { type: cardType as PaymentType, length: pattern.length };
+        }
       }
     }
+  }
+
+  if (bestMatch) {
+    return bestMatch.type;
   }
 
   // Fallback to full regex validation for edge cases

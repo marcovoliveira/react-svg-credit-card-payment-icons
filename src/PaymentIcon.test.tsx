@@ -78,4 +78,25 @@ describe('PaymentIcon', () => {
     const svg = container.querySelector('svg');
     expect(svg).toBeInTheDocument();
   });
+
+  it('handles empty string type', () => {
+    // @ts-expect-error - Testing edge case
+    const { container } = render(<PaymentIcon type="" />);
+    const svg = container.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+  });
+
+  it('handles undefined type', () => {
+    // @ts-expect-error - Testing edge case
+    const { container } = render(<PaymentIcon type={undefined} />);
+    const svg = container.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+  });
+
+  it('handles types with hyphens and underscores', () => {
+    // @ts-expect-error - Testing edge case with non-standard formatting
+    const { container } = render(<PaymentIcon type="master-card" />);
+    const svg = container.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+  });
 });
