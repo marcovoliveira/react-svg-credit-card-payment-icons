@@ -37,17 +37,43 @@ pnpm add react-svg-credit-card-payment-icons
 
 ## 📦 Usage
 
+### Option 1: PaymentIcon Component
+
 ```tsx
 import { PaymentIcon } from 'react-svg-credit-card-payment-icons';
-```
 
-....
-
-```tsx
 const App = () => {
   return <PaymentIcon type="visa" format="flatRounded" width={100} />;
 };
 ```
+
+**Note:** The `PaymentIcon` component bundles all 108 icons (~700KB). For better tree-shaking and smaller bundle sizes, use Option 2.
+
+### Option 2: Direct Icon Imports (Recommended for Bundle Size)
+
+Import only the icons you need for optimal tree-shaking:
+
+```tsx
+import { Visa, Mastercard } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
+
+const App = () => {
+  return (
+    <>
+      <Visa width={100} />
+      <Mastercard width={100} />
+    </>
+  );
+};
+```
+
+Available import paths:
+
+- `react-svg-credit-card-payment-icons/icons/flat`
+- `react-svg-credit-card-payment-icons/icons/flat-rounded`
+- `react-svg-credit-card-payment-icons/icons/logo`
+- `react-svg-credit-card-payment-icons/icons/logo-border`
+- `react-svg-credit-card-payment-icons/icons/mono`
+- `react-svg-credit-card-payment-icons/icons/mono-outline`
 
 ## 🔧 Card Utilities
 
@@ -119,6 +145,26 @@ function CardInput() {
       <div>Type: {cardType}</div>
       <div>Valid: {isValid ? 'Yes' : 'No'}</div>
       <div>Formatted: {formatCardNumber(cardNumber)}</div>
+    </div>
+  );
+}
+```
+
+### Tree-Shakeable Example
+
+For better bundle optimization, import only the cards you need:
+
+```tsx
+import { Visa, Mastercard } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
+import { detectCardType } from 'react-svg-credit-card-payment-icons';
+
+function PaymentForm() {
+  const cardType = detectCardType(cardNumber);
+
+  return (
+    <div>
+      {cardType === 'Visa' && <Visa width={40} />}
+      {cardType === 'Mastercard' && <Mastercard width={40} />}
     </div>
   );
 }

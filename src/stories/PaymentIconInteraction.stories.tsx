@@ -1,23 +1,69 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'vitest';
+import { expect } from 'storybook/test';
+import { fn } from 'storybook/test';
 import { PaymentIcon } from '../index';
 
 const meta = {
   component: PaymentIcon,
-  title: 'PaymentIcon/Interactions',
+  title: '4. Testing / Interaction Tests',
   tags: ['autodocs'],
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: `
+# Automated Interaction Tests
+
+These stories include automated tests that verify component behavior.
+
+Click the **Interactions** tab to see tests running in real-time.
+
+Tests verify:
+- Component renders correctly
+- Props are applied properly
+- Correct attributes are set
+- Colors and styles are preserved
+        `,
+      },
+    },
+  },
   argTypes: {
     type: {
       control: 'select',
       options: ['Visa', 'Mastercard', 'Americanexpress', 'Discover', 'Paypal', 'Generic'],
+      table: {
+        type: { summary: 'string' },
+      },
     },
     format: {
       control: 'select',
       options: ['flat', 'flatRounded', 'logo', 'logoBorder', 'mono', 'monoOutline'],
+      table: {
+        type: { summary: 'string' },
+      },
     },
-    width: { control: 'number' },
-    height: { control: 'number' },
+    width: {
+      control: 'number',
+      table: {
+        type: { summary: 'number' },
+      },
+    },
+    height: {
+      control: 'number',
+      table: {
+        type: { summary: 'number' },
+      },
+    },
+    onClick: {
+      action: 'clicked',
+      table: {
+        type: { summary: '(event: MouseEvent) => void' },
+      },
+    },
+  },
+  args: {
+    onClick: fn(),
   },
 } satisfies Meta<typeof PaymentIcon>;
 

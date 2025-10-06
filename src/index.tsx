@@ -83,3 +83,11 @@ export {
   maskCardNumber,
   sanitizeCardNumber,
 } from './utils/cardUtils';
+
+// Export individual icon components for tree-shaking
+export * as flat from '../generated/icons/flat';
+export * as flatRounded from '../generated/icons/flat-rounded';
+export * as logo from '../generated/icons/logo';
+export * as logoBorder from '../generated/icons/logo-border';
+export * as mono from '../generated/icons/mono';
+export * as monoOutline from '../generated/icons/mono-outline';

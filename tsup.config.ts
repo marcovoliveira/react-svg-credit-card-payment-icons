@@ -4,11 +4,20 @@ import { transform } from '@svgr/core';
 import path from 'path';
 
 export default defineConfig({
-  entry: ['src/index.tsx'],
+  entry: {
+    index: 'src/index.tsx',
+    'icons/flat': 'generated/icons/flat/index.ts',
+    'icons/flat-rounded': 'generated/icons/flat-rounded/index.ts',
+    'icons/logo': 'generated/icons/logo/index.ts',
+    'icons/logo-border': 'generated/icons/logo-border/index.ts',
+    'icons/mono': 'generated/icons/mono/index.ts',
+    'icons/mono-outline': 'generated/icons/mono-outline/index.ts',
+  },
   format: ['cjs', 'esm'],
   dts: true,
   target: 'es2022',
   clean: true,
+  splitting: true,
   esbuildPlugins: [
     {
       name: 'svgr',

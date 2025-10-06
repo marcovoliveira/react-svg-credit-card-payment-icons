@@ -16,6 +16,36 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
+    },
+    "./icons/flat": {
+      "types": "./dist/icons/flat.d.ts",
+      "import": "./dist/icons/flat.mjs",
+      "require": "./dist/icons/flat.js"
+    },
+    "./icons/flat-rounded": {
+      "types": "./dist/icons/flat-rounded.d.ts",
+      "import": "./dist/icons/flat-rounded.mjs",
+      "require": "./dist/icons/flat-rounded.js"
+    },
+    "./icons/logo": {
+      "types": "./dist/icons/logo.d.ts",
+      "import": "./dist/icons/logo.mjs",
+      "require": "./dist/icons/logo.js"
+    },
+    "./icons/logo-border": {
+      "types": "./dist/icons/logo-border.d.ts",
+      "import": "./dist/icons/logo-border.mjs",
+      "require": "./dist/icons/logo-border.js"
+    },
+    "./icons/mono": {
+      "types": "./dist/icons/mono.d.ts",
+      "import": "./dist/icons/mono.mjs",
+      "require": "./dist/icons/mono.js"
+    },
+    "./icons/mono-outline": {
+      "types": "./dist/icons/mono-outline.d.ts",
+      "import": "./dist/icons/mono-outline.mjs",
+      "require": "./dist/icons/mono-outline.js"
     }
   },
   "files": [

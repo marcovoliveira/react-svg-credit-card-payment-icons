@@ -4,6 +4,7 @@
     "dbaeumer.vscode-eslint",
     "Orta.vscode-jest",
     "YoavBls.pretty-ts-errors",
-    "wayou.vscode-todo-highlight"
+    "wayou.vscode-todo-highlight",
+    "unifiedjs.vscode-mdx"
   ]
 }
