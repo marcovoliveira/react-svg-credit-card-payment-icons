@@ -52,6 +52,7 @@
     "dist"
   ],
   "scripts": {
+    "prepare": "npm run build",
     "generate": "rm -rf generated/icons && tsx scripts/generate-components.ts",
     "pretypecheck": "pnpm run generate",
     "typecheck": "tsc --noEmit",
