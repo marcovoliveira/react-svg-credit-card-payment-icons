@@ -1,5 +1,35 @@
 # react-svg-credit-card-payment-icons
 
+## Unreleased
+
+@codybrom contributed a major refactor to the library, improving architecture, developer experience, and bundle optimization.
+
+### Major Changes
+
+- Architecture Refactor (PR #18)
+  - Complete modernization of library architecture without breaking changes
+  - Vendor-based icon organization for easier maintenance
+  - Build-time component generation using `@svgr/core` using pre-hooks
+  - Removed ~200 files of generalizable components from version control
+  - Fixed improper vendor detection ([#16](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/issues/16)) with a new longest-match algorithm for handling overlapping IIN ranges
+  - Added package subpath exports for tree-shakable bundles
+    - Import specific icons: `import { Visa } from 'react-svg-credit-card-payment-icons/icons/flat'`
+    - Reduces bundle size from ~700KB to ~5-15KB when importing individual icons
+    - Available paths: `/icons/flat`, `/icons/flat-rounded`, `/icons/logo`, `/icons/logo-border`, `/icons/mono`, `/icons/mono-outline`
+  - Added comprehensive Jest unit tests for card utilities and Vitest integration for Storybook component tests
+  - Added ESLint 9 with a modern flat configuration
+  - Standardized package manager to pnpm ([#12](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/issues/12))
+
+- React 19 Compatibility (PR #13)
+  - Full support for React 19 with proper camelCase SVG attribute handling ([#11](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/issues/11))
+  - Fixed SVG attribute naming to use React 19-compatible format
+  - Fixed CSS properties in style tags (hyphenated format for CSS, camelCase for JSX attributes)
+
+- Storybook v9 Upgrade (PR #15)
+  - Upgraded Storybook to v9 with Vite
+  - Modernized Storybook deployment workflow ([#14](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/issues/14))
+  - Improved documentation and component stories
+
 ## 4.2.1
 
 ### Patch Changes
