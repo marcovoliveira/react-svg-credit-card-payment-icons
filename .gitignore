@@ -6,7 +6,7 @@ dist/
 .out
 .storybook-out
 storybook-static
-
+docs-build/
 docs/
 
 # Lock files for other package managers (pnpm is used)
