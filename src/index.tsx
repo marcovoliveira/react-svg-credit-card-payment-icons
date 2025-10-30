@@ -58,13 +58,14 @@ export function PaymentIcon(props: PaymentIconProps): JSX.Element {
 
   const Component: (props: SVGProps<SVGSVGElement>) => JSX.Element = categoryComponents[cardProvider] ?? FlatRoundedComponents.Generic;
 
-  const width = props.width === undefined && props.height === undefined ? defaultWidth : props.width as number;
+  const width = props.width ?? (props.height ? (props.height as number) * aspectRatio : defaultWidth);
+  const height = props.height ?? (width as number) / aspectRatio;
 
   return <Component
     {...props}
     fill='#000'
     width={width}
-    height={width / aspectRatio}
+    height={height}
     viewBox="0 0 780 500"
  />;
 }
