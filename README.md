@@ -54,13 +54,13 @@ const App = () => {
 Import only the icons you need for optimal tree-shaking:
 
 ```tsx
-import { Visa, Mastercard } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
+import { Visa as VisaIcon, Mastercard as MastercardIcon } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
 
 const App = () => {
   return (
     <>
-      <Visa width={100} />
-      <Mastercard width={100} />
+      <VisaIcon width={100} />
+      <MastercardIcon width={100} />
     </>
   );
 };
