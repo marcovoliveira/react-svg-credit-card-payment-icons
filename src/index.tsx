@@ -1,11 +1,11 @@
 import React, { JSX } from 'react';
-import * as FlatComponents from './icons/flat/components/index';
-import * as FlatRoundedComponents from './icons/flat-rounded/components/index';
-import * as LogoComponents from './icons/logo/components/index';
-import * as LogoBorderComponents from './icons/logo-border/components/index';
-import * as MonoComponents from './icons/mono/components/index';
-import * as MonoOutlineComponents from './icons/mono-outline/components/index';
-import type { SVGProps } from "react";
+import * as FlatComponents from '../generated/icons/flat';
+import * as FlatRoundedComponents from '../generated/icons/flat-rounded';
+import * as LogoComponents from '../generated/icons/logo';
+import * as LogoBorderComponents from '../generated/icons/logo-border';
+import * as MonoComponents from '../generated/icons/mono';
+import * as MonoOutlineComponents from '../generated/icons/mono-outline';
+import type { SVGProps } from 'react';
 
 export type SVGComponentProps = {
   width?: number;
@@ -28,12 +28,10 @@ export type PaymentType = keyof typeof FlatComponents &
   keyof typeof MonoComponents &
   keyof typeof MonoOutlineComponents;
 
-
 type PaymentCategory = keyof typeof categoryMappings;
 
 // @deprecated Use PaymentType instead
 export type PaymentTypeExtended = PaymentType | 'Generic' | 'Code';
-
 
 const defaultType = 'generic' as PaymentType;
 const defaultCategory = 'flat';
@@ -43,31 +41,36 @@ const aspectRatio = 780 / 500; // Width / Height of the svgs.
 const defaultWidth = 40;
 
 type PaymentIconProps = {
-  type: PaymentType;
+  type: PaymentType | 'Amex'; // Amex is an alias for Americanexpress
   format?: PaymentCategory;
 } & SVGProps<SVGSVGElement>;
 
 export function PaymentIcon(props: PaymentIconProps): JSX.Element {
   const category = (props.format || defaultCategory) as PaymentCategory;
-  if(!categoryMappings[category]) throw new Error(`Invalid category: ${category} please use one of ${Object.keys(categoryMappings).join(', ')}`);
+  if (!categoryMappings[category])
+    throw new Error(
+      `Invalid category: ${category} please use one of ${Object.keys(categoryMappings).join(', ')}`
+    );
   const formatedType = props.type?.toLowerCase() ?? defaultType;
-  const sanitizedType = (formatedType || defaultType).replace(/[-_]/g, "");
-  const cardProvider = sanitizedType.charAt(0).toUpperCase() + sanitizedType.slice(1) as PaymentType;
-  
-  const categoryComponents = categoryMappings[category]; 
+  const sanitizedType = (formatedType || defaultType).replace(/[-_]/g, '');
+  let normalizedType = sanitizedType.charAt(0).toUpperCase() + sanitizedType.slice(1);
 
-  const Component: (props: SVGProps<SVGSVGElement>) => JSX.Element = categoryComponents[cardProvider] ?? FlatRoundedComponents.Generic;
+  // Alias: Amex -> Americanexpress
+  if (normalizedType === 'Amex') {
+    normalizedType = 'Americanexpress';
+  }
 
-  const width = props.width ?? (props.height ? (props.height as number) * aspectRatio : defaultWidth);
+  const cardProvider = normalizedType as PaymentType;
+  const categoryComponents = categoryMappings[category];
+
+  const Component: (props: SVGProps<SVGSVGElement>) => JSX.Element =
+    categoryComponents[cardProvider] ?? FlatRoundedComponents.Generic;
+
+  const width =
+    props.width ?? (props.height ? (props.height as number) * aspectRatio : defaultWidth);
   const height = props.height ?? (width as number) / aspectRatio;
 
-  return <Component
-    {...props}
-    fill='#000'
-    width={width}
-    height={height}
-    viewBox="0 0 780 500"
- />;
+  return <Component {...props} width={width} height={height} viewBox="0 0 780 500" />;
 }
 
 export {
@@ -78,7 +81,13 @@ export {
   getCardLengthRange,
   isCardNumberPotentiallyValid,
   maskCardNumber,
-  sanitizeCardNumber
+  sanitizeCardNumber,
 } from './utils/cardUtils';
 
-
+// Export individual icon components for tree-shaking
+export * as flat from '../generated/icons/flat';
+export * as flatRounded from '../generated/icons/flat-rounded';
+export * as logo from '../generated/icons/logo';
+export * as logoBorder from '../generated/icons/logo-border';
+export * as mono from '../generated/icons/mono';
+export * as monoOutline from '../generated/icons/mono-outline';
