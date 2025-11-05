@@ -229,6 +229,7 @@ export function PaymentIcon(props: PaymentIconProps): JSX.Element {
 
 export {
   detectCardType,
+  getCardType,
   validateCardNumber,
   formatCardNumber,
   validateCardForType,

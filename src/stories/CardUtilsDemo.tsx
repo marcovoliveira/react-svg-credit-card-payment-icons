@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PaymentIcon, type PaymentType } from '../index';
 import {
-  detectCardType,
+  getCardType,
   validateCardNumber,
   formatCardNumber,
   maskCardNumber,
@@ -39,7 +39,7 @@ export default function CardUtilsDemo() {
   const handleCardNumberChange = (value: string) => {
     setCardNumber(value);
 
-    const detected = detectCardType(value);
+    const detected = getCardType(value);
     setDetectedType(detected);
 
     setIsValid(validateCardNumber(value));
@@ -145,7 +145,7 @@ export default function CardUtilsDemo() {
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#f9f9f9')}
             >
-              <PaymentIcon type={detectCardType(card.number)} format="flatRounded" width={40} />
+              <PaymentIcon type={getCardType(card.number)} format="flatRounded" width={40} />
               <div>
                 <div>
                   <strong>{card.displayName}</strong>

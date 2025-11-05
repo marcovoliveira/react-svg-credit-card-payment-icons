@@ -23,18 +23,56 @@ export function sanitizeCardNumber(cardNumber: string): string {
  *
  * Returns 'Generic' for unknown or invalid cards.
  *
+ * This is the recommended function for card type detection, returning canonical type names
+ * (AmericanExpress, DinersClub, UnionPay, PayPal, JCB).
+ *
  * @param cardNumber - Card number (formatted or unformatted)
- * @param useLegacy - If true, returns v4.x type names for backward compatibility (default: false)
- * @returns Detected card type name
+ * @returns Detected card type name with canonical casing
  * @example
- * detectCardType('4242424242424242')           // 'Visa'
- * detectCardType('5555 5555 5555 4444')        // 'Mastercard'
- * detectCardType('3782 822463 10005')          // 'AmericanExpress' (new in v5)
- * detectCardType('3782 822463 10005', true)    // 'Americanexpress' (v4 compatible)
- * detectCardType('30569309025904')             // 'DinersClub' (new in v5)
- * detectCardType('30569309025904', true)       // 'Diners' (v4 compatible)
+ * getCardType('4242424242424242')        // 'Visa'
+ * getCardType('5555 5555 5555 4444')     // 'Mastercard'
+ * getCardType('3782 822463 10005')       // 'AmericanExpress'
+ * getCardType('30569309025904')          // 'DinersClub'
+ * getCardType('6200000000000005')        // 'UnionPay'
+ * getCardType('3566002020360505')        // 'JCB'
  */
-export function detectCardType(cardNumber: string, useLegacy: boolean = false): PaymentType {
+export function getCardType(cardNumber: string): PaymentType {
+  const sanitized = sanitizeCardNumber(cardNumber);
+
+  if (sanitized.length < 4) {
+    return 'Generic';
+  }
+
+  const isPartial = sanitized.length < 13;
+
+  for (const { type, patterns } of getCardDefinitions()) {
+    if (isPartial) {
+      if (patterns.prefix?.test(sanitized)) {
+        return type as PaymentType;
+      }
+    } else {
+      if (patterns.full.some((p) => p.test(sanitized))) {
+        return type as PaymentType;
+      }
+    }
+  }
+
+  return 'Generic';
+}
+
+/**
+ * Detects card type by testing against regex patterns for each card type.
+ *
+ * @deprecated Use `getCardType()` instead. This function is maintained for backward compatibility and returns legacy v4.x type names.
+ * @param cardNumber - Card number (formatted or unformatted)
+ * @returns Detected card type name (legacy v4.x format: 'Americanexpress', 'Diners', etc.)
+ * @example
+ * detectCardType('4242424242424242')     // 'Visa'
+ * detectCardType('5555 5555 5555 4444')  // 'Mastercard'
+ * detectCardType('3782 822463 10005')    // 'Americanexpress' (legacy)
+ * detectCardType('30569309025904')       // 'Diners' (legacy)
+ */
+export function detectCardType(cardNumber: string): PaymentType {
   const sanitized = sanitizeCardNumber(cardNumber);
 
   if (sanitized.length < 4) {
@@ -46,11 +84,11 @@ export function detectCardType(cardNumber: string, useLegacy: boolean = false): 
   for (const { type, legacyType, patterns } of getCardDefinitions()) {
     if (isPartial) {
       if (patterns.prefix?.test(sanitized)) {
-        return (useLegacy && legacyType ? legacyType : type) as PaymentType;
+        return (legacyType || type) as PaymentType;
       }
     } else {
       if (patterns.full.some((p) => p.test(sanitized))) {
-        return (useLegacy && legacyType ? legacyType : type) as PaymentType;
+        return (legacyType || type) as PaymentType;
       }
     }
   }
@@ -129,7 +167,7 @@ export function validateCardNumber(cardNumber: string): boolean {
  */
 export function formatCardNumber(cardNumber: string): string {
   const sanitized = sanitizeCardNumber(cardNumber);
-  const cardType = detectCardType(sanitized);
+  const cardType = getCardType(sanitized);
 
   // Find the card definition to get its format pattern
   const cardDefinition = getCardDefinitions().find((def) => def.type === cardType);
@@ -278,7 +316,7 @@ export function getCardLengthRange(cardType: PaymentType): { min: number; max: n
  */
 export function isCardNumberPotentiallyValid(cardNumber: string): boolean {
   const sanitized = sanitizeCardNumber(cardNumber);
-  const cardType = detectCardType(sanitized);
+  const cardType = getCardType(sanitized);
   const lengthRange = getCardLengthRange(cardType);
 
   if (!lengthRange) {

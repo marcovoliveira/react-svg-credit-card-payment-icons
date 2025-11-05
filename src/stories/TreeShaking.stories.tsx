@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
 import { Visa, Mastercard, AmericanExpress } from '../../generated/icons/flat-rounded';
-import { detectCardType } from '../utils/cardUtils';
+import { getCardType } from '../utils/cardUtils';
 
 const meta = {
   title: '3. Advanced Usage / Tree-Shakeable Imports',
@@ -79,7 +79,7 @@ function App() {
 export const WithCardDetection: Story = {
   render: () => {
     const [cardNumber, setCardNumber] = useState('');
-    const cardType = detectCardType(cardNumber);
+    const cardType = getCardType(cardNumber);
 
     return (
       <div style={{ maxWidth: '400px' }}>
@@ -136,12 +136,12 @@ export const WithCardDetection: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { detectCardType } from 'react-svg-credit-card-payment-icons';
+        code: `import { getCardType } from 'react-svg-credit-card-payment-icons';
 import { Visa, Mastercard, AmericanExpress } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
 
 function PaymentForm() {
   const [cardNumber, setCardNumber] = useState('');
-  const cardType = detectCardType(cardNumber);
+  const cardType = getCardType(cardNumber);
 
   return (
     <div>

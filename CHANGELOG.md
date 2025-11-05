@@ -6,36 +6,23 @@
 
 Contributed by @codybrom.
 
-### Breaking Changes
+### Deprecations
 
-- **`detectCardType()` now returns canonical type names**:
-  - **Breaking**: `detectCardType()` returns canonical types by default: `'AmericanExpress'` (not `'Americanexpress'`), `'DinersClub'` (not `'Diners'`), `'UnionPay'` (not `'Unionpay'`), `'PayPal'` (not `'Paypal'`), `'JCB'` (not `'Jcb'`)
-  - **Migration Path 1** - Update type comparisons (recommended):
-
-    ```javascript
-    // v4 (old)
-    if (detectCardType(cardNumber) === 'Americanexpress') { ... }
-
-    // v5 (new)
-    if (detectCardType(cardNumber) === 'AmericanExpress') { ... }
-    ```
-
-  - **Migration Path 2** - Use legacy mode for backward compatibility:
+- **`detectCardType()` is now deprecated** in favor of the new `getCardType()` function:
+  - `detectCardType()` continues to work and returns legacy v4.x type names (`'Americanexpress'`, `'Diners'`, `'Unionpay'`, `'Paypal'`, `'Jcb'`)
+  - New `getCardType()` function returns canonical type names (`'AmericanExpress'`, `'DinersClub'`, `'UnionPay'`, `'PayPal'`, `'JCB'`)
+  - Migration is optional - both functions will continue to work
+  - Recommended migration:
 
     ```javascript
-    // Use useLegacy parameter to get v4.x type names
-    detectCardType(cardNumber, true)  // Returns 'Americanexpress', 'Diners', etc.
+    // v4/v5 (deprecated but still works)
+    const type = detectCardType(cardNumber); // 'Americanexpress'
+
+    // v5+ (recommended)
+    const type = getCardType(cardNumber);    // 'AmericanExpress'
     ```
 
-  - **Component usage**: `<PaymentIcon type="..." />` still accepts all aliases (`Amex`, `Diners`, `Americanexpress`, etc.) for full backward compatibility
-
-- Card type naming improvements for consistency:
-  - `Diners` → `DinersClub` (alias: `Diners`)
-  - `Americanexpress` → `AmericanExpress` (aliases: `Amex`, `Americanexpress`)
-  - `Unionpay` → `UnionPay` (alias: `Unionpay`)
-  - `Paypal` → `PayPal` (alias: `Paypal`)
-  - `Jcb` → `JCB` (alias: `Jcb`)
-  - Variant aliases properly distinguished: `Hiper` (variant of `Hipercard`), `Code`/`CodeFront` (variants of `Generic`)
+  - **Component usage**: `<PaymentIcon type="..." />` accepts all type names and aliases (`Amex`, `Diners`, `Americanexpress`, `AmericanExpress`, etc.) for full compatibility
 
 ### Major Changes
 

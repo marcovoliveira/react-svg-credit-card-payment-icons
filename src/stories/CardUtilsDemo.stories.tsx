@@ -24,7 +24,8 @@ A comprehensive set of utilities for detecting card types, validating card numbe
 
 ## Available Functions
 
-- \`detectCardType(cardNumber, useLegacy?)\` - Detect card type from number (set \`useLegacy=true\` for v4 type names)
+- \`getCardType(cardNumber)\` - Detect card type from number (returns canonical names)
+- \`detectCardType(cardNumber)\` - **Deprecated** - Use \`getCardType()\` instead (returns legacy v4 names)
 - \`validateCardNumber(cardNumber)\` - Validate using Luhn algorithm
 - \`formatCardNumber(cardNumber)\` - Format with spacing
 - \`maskCardNumber(cardNumber)\` - Mask all but last 4 digits
@@ -33,14 +34,11 @@ A comprehensive set of utilities for detecting card types, validating card numbe
 - \`getCardLengthRange(cardType)\` - Get valid length range
 - \`sanitizeCardNumber(cardNumber)\` - Remove non-digits
 
-## Breaking Changes in v5
+## What's New in v5
 
-In v5, \`detectCardType()\` returns canonical type names by default:
-- \`'AmericanExpress'\` (not \`'Americanexpress'\`)
-- \`'DinersClub'\` (not \`'Diners'\`)
-- \`'Hipercard'\` (not \`'Hiper'\`)
-
-For backward compatibility, use \`detectCardType(cardNumber, true)\` to get v4 type names.
+- New \`getCardType()\` function returns canonical type names: \`'AmericanExpress'\`, \`'DinersClub'\`, \`'UnionPay'\`, \`'PayPal'\`, \`'JCB'\`
+- \`detectCardType()\` is now deprecated but still works (returns legacy names: \`'Americanexpress'\`, \`'Diners'\`, etc.)
+- \`<PaymentIcon />\` component accepts all type names and aliases for compatibility
 
 Try entering different card numbers in the demo below!
         `,

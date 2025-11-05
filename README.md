@@ -122,17 +122,21 @@ As of version 4, the package includes powerful card detection and validation uti
 
 ```tsx
 import {
-  detectCardType,
+  getCardType,
+  detectCardType, // deprecated - use getCardType instead
   validateCardNumber,
   formatCardNumber,
   maskCardNumber,
   isCardNumberPotentiallyValid,
 } from 'react-svg-credit-card-payment-icons';
 
-// Detect card type from number
-const cardType = detectCardType('4242424242424242'); // Returns 'Visa'
-const amexType = detectCardType('378282246310005'); // Returns 'AmericanExpress' (v5+)
-const amexLegacy = detectCardType('378282246310005', true); // Returns 'Americanexpress' (v4 compatible)
+// Detect card type from number (recommended)
+const cardType = getCardType('4242424242424242');  // Returns 'Visa'
+const amexType = getCardType('378282246310005');   // Returns 'AmericanExpress'
+const dinersType = getCardType('30569309025904');  // Returns 'DinersClub'
+
+// Legacy function (deprecated but still works)
+const legacyType = detectCardType('378282246310005'); // Returns 'Americanexpress'
 
 // Validate card number using Luhn algorithm
 const isValid = validateCardNumber('4242424242424242'); // Returns true
@@ -151,8 +155,9 @@ const isPotentiallyValid = isCardNumberPotentiallyValid('4242424242424242'); // 
 
 | Function                                          | Description                                   | Example                                                     |
 | ------------------------------------------------- | --------------------------------------------- | ----------------------------------------------------------- |
-| `detectCardType(cardNumber, useLegacy?)`          | Detects card type from number                 | `detectCardType('4242...') // 'Visa'`                       |
-|                                                   | Set `useLegacy=true` for v4 type names        | `detectCardType('3782...', true) // 'Americanexpress'`      |
+| `getCardType(cardNumber)`                         | Detects card type from number                 | `getCardType('4242...') // 'Visa'`                          |
+|                                                   | Returns canonical type names                  | `getCardType('3782...') // 'AmericanExpress'`               |
+| `detectCardType(cardNumber)` *(deprecated)*       | Legacy card type detection                    | `detectCardType('3782...') // 'Americanexpress'`            |
 | `validateCardNumber(cardNumber)`           | Validates using Luhn algorithm    | `validateCardNumber('4242...') // true`                |
 | `formatCardNumber(cardNumber)`             | Formats with appropriate spacing  | `formatCardNumber('4242...') // '4242 4242 4242 4242'` |
 | `maskCardNumber(cardNumber)`               | Masks all but last 4 digits       | `maskCardNumber('4242...') // '**** **** **** 4242'`   |

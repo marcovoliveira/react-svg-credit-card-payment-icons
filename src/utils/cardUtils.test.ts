@@ -1,5 +1,6 @@
 import {
   detectCardType,
+  getCardType,
   validateCardNumber,
   formatCardNumber,
   sanitizeCardNumber,
@@ -11,59 +12,63 @@ import {
 import { CARD_METADATA, type CardMetadata } from '../../generated/cardMetadata';
 
 describe('cardUtils', () => {
-  describe('detectCardType', () => {
+  describe('getCardType', () => {
     it('returns Generic for too short input', () => {
-      expect(detectCardType('4')).toBe('Generic');
-      expect(detectCardType('12')).toBe('Generic');
-      expect(detectCardType('123')).toBe('Generic');
+      expect(getCardType('4')).toBe('Generic');
+      expect(getCardType('12')).toBe('Generic');
+      expect(getCardType('123')).toBe('Generic');
+    });
+
+    it('returns Generic for unknown patterns', () => {
+      expect(getCardType('9999999999999999')).toBe('Generic');
+      expect(getCardType('')).toBe('Generic');
+    });
+
+    it('handles partial card numbers (prefix detection)', () => {
+      expect(getCardType('4111')).toBe('Visa'); // Partial Visa
+      expect(getCardType('5111')).toBe('Mastercard'); // Partial Mastercard
+    });
+
+    it('returns canonical type, not variant alias', () => {
+      // Hipercard test numbers should return 'Hipercard', not 'Hiper'
+      expect(getCardType('6062825624254001')).toBe('Hipercard');
+      expect(getCardType('6062828888666688')).toBe('Hipercard');
+    });
+
+    it('returns canonical type names', () => {
+      // Should return canonical names
+      expect(getCardType('378282246310005')).toBe('AmericanExpress');
+      expect(getCardType('30569309025904')).toBe('DinersClub');
+      expect(getCardType('6200000000000005')).toBe('UnionPay');
+      expect(getCardType('3566002020360505')).toBe('JCB');
+    });
+
+    it('returns canonical types for all cards', () => {
+      expect(getCardType('4242424242424242')).toBe('Visa');
+      expect(getCardType('5555555555554444')).toBe('Mastercard');
+      expect(getCardType('6011111111111117')).toBe('Discover');
+    });
+  });
+
+  describe('detectCardType (deprecated)', () => {
+    it('returns legacy type names for backward compatibility', () => {
+      // Legacy function returns v4.x type names
+      expect(detectCardType('378282246310005')).toBe('Americanexpress');
+      expect(detectCardType('30569309025904')).toBe('Diners');
+      expect(detectCardType('6200000000000005')).toBe('Unionpay');
+      expect(detectCardType('3566002020360505')).toBe('Jcb');
+    });
+
+    it('returns canonical names for cards without legacy types', () => {
+      // Cards without legacyType return canonical type
+      expect(detectCardType('4242424242424242')).toBe('Visa');
+      expect(detectCardType('5555555555554444')).toBe('Mastercard');
+      expect(detectCardType('6011111111111117')).toBe('Discover');
     });
 
     it('returns Generic for unknown patterns', () => {
       expect(detectCardType('9999999999999999')).toBe('Generic');
       expect(detectCardType('')).toBe('Generic');
-    });
-
-    it('handles partial card numbers (prefix detection)', () => {
-      expect(detectCardType('4111')).toBe('Visa'); // Partial Visa
-      expect(detectCardType('5111')).toBe('Mastercard'); // Partial Mastercard
-    });
-
-    it('returns canonical type, not variant alias', () => {
-      // Hipercard test numbers should return 'Hipercard', not 'Hiper'
-      expect(detectCardType('6062825624254001')).toBe('Hipercard');
-      expect(detectCardType('6062828888666688')).toBe('Hipercard');
-
-      // Generic is the base type for Code/CodeFront variants
-      // Note: Generic has null patterns, so we can't test it this way
-      // The PaymentIcon component handles variant resolution
-    });
-
-    it('returns canonical type for cards with regular aliases', () => {
-      // Should return canonical names, not aliases
-      // Amex numbers should return 'AmericanExpress', not 'Amex'
-      expect(detectCardType('378282246310005')).toBe('AmericanExpress');
-
-      // Diners numbers should return 'DinersClub', not 'Diners'
-      expect(detectCardType('30569309025904')).toBe('DinersClub');
-    });
-
-    it('supports legacy mode for backward compatibility', () => {
-      // When useLegacy=true, returns v4.x type names
-      expect(detectCardType('378282246310005', true)).toBe('Americanexpress');
-      expect(detectCardType('30569309025904', true)).toBe('Diners');
-
-      // Cards without legacyType return canonical type regardless
-      expect(detectCardType('4242424242424242', true)).toBe('Visa');
-      expect(detectCardType('5555555555554444', true)).toBe('Mastercard');
-    });
-
-    it('defaults to canonical types (useLegacy=false)', () => {
-      // Default behavior returns new canonical names
-      expect(detectCardType('378282246310005')).toBe('AmericanExpress');
-      expect(detectCardType('378282246310005', false)).toBe('AmericanExpress');
-
-      expect(detectCardType('30569309025904')).toBe('DinersClub');
-      expect(detectCardType('30569309025904', false)).toBe('DinersClub');
     });
   });
 
@@ -231,7 +236,7 @@ describe('cardUtils', () => {
       if (card.testNumbers && card.testNumbers.length > 0) {
         it(`detects ${card.type} test numbers from YAML`, () => {
           card.testNumbers.forEach((testNumber: string) => {
-            const detected = detectCardType(testNumber);
+            const detected = getCardType(testNumber);
             expect(detected).toBe(card.type);
           });
         });
@@ -253,20 +258,20 @@ describe('cardUtils', () => {
     it('correctly distinguishes Elo from Mastercard', () => {
       // Elo has specific ranges that overlap with Mastercard's 5xxx range
       // Pattern should be specific enough to detect Elo correctly
-      expect(detectCardType('5066991111111118')).toBe('Elo');
+      expect(getCardType('5066991111111118')).toBe('Elo');
     });
 
     it('handles partial card numbers correctly', () => {
-      expect(detectCardType('4')).toBe('Generic'); // Too short
-      expect(detectCardType('41')).toBe('Generic'); // Too short
-      expect(detectCardType('411')).toBe('Generic'); // Too short
-      expect(detectCardType('4111')).toBe('Visa'); // Partial Visa
+      expect(getCardType('4')).toBe('Generic'); // Too short
+      expect(getCardType('41')).toBe('Generic'); // Too short
+      expect(getCardType('411')).toBe('Generic'); // Too short
+      expect(getCardType('4111')).toBe('Visa'); // Partial Visa
     });
 
     it('handles formatted card numbers', () => {
-      expect(detectCardType('4111 1111 1111 1111')).toBe('Visa');
-      expect(detectCardType('3782-8224-6310-005')).toBe('AmericanExpress');
-      expect(detectCardType('5555.5555.5555.4444')).toBe('Mastercard');
+      expect(getCardType('4111 1111 1111 1111')).toBe('Visa');
+      expect(getCardType('3782-8224-6310-005')).toBe('AmericanExpress');
+      expect(getCardType('5555.5555.5555.4444')).toBe('Mastercard');
     });
 
     it('validates length ranges match card type requirements', () => {
