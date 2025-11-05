@@ -11,10 +11,9 @@
 SVG Credit Card & Payment Icons: 6 Styles, 80 Icons for React ⚛️
 
 A collection of SVG based credit card logo icons.
-React componnent with Typescript support.
+React component with Typescript support.
 
-## Demo 
-[![Storybook](https://img.shields.io/badge/Storybook-🔗-FF4785?style=for-the-badge&logo=storybook&logoColor=white)](https://marcovoliveira.github.io/react-svg-credit-card-payment-icons/?path=/docs/1-getting-started-quick-start--docs)
+## [Live Demo](https://marcovoliveira.github.io/react-svg-credit-card-payment-icons/?path=/docs/payment-cards--docs)
 
 ## 💿 Installation
 
@@ -79,6 +78,44 @@ Available import paths:
 - `react-svg-credit-card-payment-icons/icons/mono`
 - `react-svg-credit-card-payment-icons/icons/mono-outline`
 
+### Card Variants and Aliases
+
+Some payment cards have multiple visual styles or go by different names. The package supports both through variants and aliases:
+
+**Type Aliases** - Alternative names for the same card:
+
+```tsx
+<PaymentIcon type="Amex" />           // Resolves to AmericanExpress
+<PaymentIcon type="Cvv" />            // Resolves to Code (back CVV)
+<PaymentIcon type="Diners" />         // Resolves to DinersClub
+```
+
+**Variant Aliases** - Different visual styles of the same card network:
+
+```tsx
+// Method 1: Use the variant alias directly (recommended)
+<PaymentIcon type="Hiper" format="flatRounded" />
+
+// Method 2: Use explicit variant prop with base type
+<PaymentIcon type="Hipercard" variant="hiper" format="flatRounded" />
+```
+
+The `Hiper` and `Hipercard` cards share the same IIN ranges but have distinct branding:
+
+- `Hiper` - Shows the Hiper-branded logo (orange/yellow colors)
+- `Hipercard` - Shows the Hipercard-branded logo
+
+Both methods produce the same result, but using the variant alias directly is more concise.
+
+**Direct Imports with Variants:**
+
+```tsx
+import { Hiper, Hipercard } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
+
+<Hiper width={80} />      // Hiper-branded variant
+<Hipercard width={80} />  // Hipercard-branded variant
+```
+
 ## 🔧 Card Utilities
 
 As of version 4, the package includes powerful card detection and validation utilities:
@@ -94,6 +131,8 @@ import {
 
 // Detect card type from number
 const cardType = detectCardType('4242424242424242'); // Returns 'Visa'
+const amexType = detectCardType('378282246310005'); // Returns 'AmericanExpress' (v5+)
+const amexLegacy = detectCardType('378282246310005', true); // Returns 'Americanexpress' (v4 compatible)
 
 // Validate card number using Luhn algorithm
 const isValid = validateCardNumber('4242424242424242'); // Returns true
@@ -110,9 +149,10 @@ const isPotentiallyValid = isCardNumberPotentiallyValid('4242424242424242'); // 
 
 ### Available Utility Functions
 
-| Function                                   | Description                       | Example                                                |
-| ------------------------------------------ | --------------------------------- | ------------------------------------------------------ |
-| `detectCardType(cardNumber)`               | Detects card type from number     | `detectCardType('4242...') // 'Visa'`                  |
+| Function                                          | Description                                   | Example                                                     |
+| ------------------------------------------------- | --------------------------------------------- | ----------------------------------------------------------- |
+| `detectCardType(cardNumber, useLegacy?)`          | Detects card type from number                 | `detectCardType('4242...') // 'Visa'`                       |
+|                                                   | Set `useLegacy=true` for v4 type names        | `detectCardType('3782...', true) // 'Americanexpress'`      |
 | `validateCardNumber(cardNumber)`           | Validates using Luhn algorithm    | `validateCardNumber('4242...') // true`                |
 | `formatCardNumber(cardNumber)`             | Formats with appropriate spacing  | `formatCardNumber('4242...') // '4242 4242 4242 4242'` |
 | `maskCardNumber(cardNumber)`               | Masks all but last 4 digits       | `maskCardNumber('4242...') // '**** **** **** 4242'`   |
@@ -178,28 +218,28 @@ function PaymentForm() {
 
 ### Available `types` and their images
 
-If the type does not exist, the default setting is generic.
+If the type does not exist, the default setting is generic. Type names are case-insensitive but PascalCase is recommended.
 
 | Type         | Image                                                                                           |
 | ------------ | ----------------------------------------------------------------------------------------------- |
-| `alipay`     | <img src="./src/icons/alipay/alipay-flat-rounded.svg" width="80" alt="Alipay"/>                 |
-| `amex`       | <img src="./src/icons/americanexpress/americanexpress-flat-rounded.svg" width="80" alt="Amex"/> |
-| `diners`     | <img src="./src/icons/diners/diners-flat-rounded.svg" width="80" alt="Diners"/>                 |
-| `discover`   | <img src="./src/icons/discover/discover-flat-rounded.svg" width="80" alt="Discover"/>           |
-| `elo`        | <img src="./src/icons/elo/elo-flat-rounded.svg" width="80" alt="Elo"/>                          |
-| `hiper`      | <img src="./src/icons/hiper/hiper-flat-rounded.svg" width="80" alt="Hiper"/>                    |
-| `hipercard`  | <img src="./src/icons/hipercard/hipercard-flat-rounded.svg" width="80" alt="Hipercard"/>        |
-| `jcb`        | <img src="./src/icons/jcb/jcb-flat-rounded.svg" width="80" alt="JCB"/>                          |
-| `maestro`    | <img src="./src/icons/maestro/maestro-flat-rounded.svg" width="80" alt="Maestro"/>              |
-| `mastercard` | <img src="./src/icons/mastercard/mastercard-flat-rounded.svg" width="80" alt="Mastercard"/>     |
-| `mir`        | <img src="./src/icons/mir/mir-flat-rounded.svg" width="80" alt="Mir"/>                          |
-| `paypal`     | <img src="./src/icons/paypal/paypal-flat-rounded.svg" width="80" alt="Paypal"/>                 |
-| `swish`      | <img src="./src/icons/swish/swish-flat-rounded.svg" width="80" alt="Swish"/>                    |
-| `unionpay`   | <img src="./src/icons/unionpay/unionpay-flat-rounded.svg" width="80" alt="Unionpay"/>           |
-| `visa`       | <img src="./src/icons/visa/visa-flat-rounded.svg" width="80" alt="Visa"/>                       |
-| `generic`    | <img src="./src/icons/generic/generic-flat-rounded.svg" width="80" alt="Generic"/>              |
-| `code`       | <img src="./src/icons/code/code-flat-rounded.svg" width="80" alt="Code"/>                       |
-| `codefront`  | <img src="./src/icons/code-front/code-front-flat-rounded.svg" width="80" alt="Code Front"/>     |
+| `Alipay`     | <img src="./src/icons/alipay/alipay-flat-rounded.svg" width="80" alt="Alipay"/>                 |
+| `AmericanExpress` | <img src="./src/icons/americanexpress/americanexpress-flat-rounded.svg" width="80" alt="American Express"/> |
+| `DinersClub` | <img src="./src/icons/dinersclub/dinersclub-flat-rounded.svg" width="80" alt="Diners Club"/>    |
+| `Discover`   | <img src="./src/icons/discover/discover-flat-rounded.svg" width="80" alt="Discover"/>           |
+| `Elo`        | <img src="./src/icons/elo/elo-flat-rounded.svg" width="80" alt="Elo"/>                          |
+| `Hiper`      | <img src="./src/icons/hipercard/hiper-flat-rounded.svg" width="80" alt="Hiper"/>                    |
+| `Hipercard`  | <img src="./src/icons/hipercard/hipercard-flat-rounded.svg" width="80" alt="Hipercard"/>        |
+| `Jcb`        | <img src="./src/icons/jcb/jcb-flat-rounded.svg" width="80" alt="JCB"/>                          |
+| `Maestro`    | <img src="./src/icons/maestro/maestro-flat-rounded.svg" width="80" alt="Maestro"/>              |
+| `Mastercard` | <img src="./src/icons/mastercard/mastercard-flat-rounded.svg" width="80" alt="Mastercard"/>     |
+| `Mir`        | <img src="./src/icons/mir/mir-flat-rounded.svg" width="80" alt="Mir"/>                          |
+| `Paypal`     | <img src="./src/icons/paypal/paypal-flat-rounded.svg" width="80" alt="Paypal"/>                 |
+| `Swish`      | <img src="./src/icons/swish/swish-flat-rounded.svg" width="80" alt="Swish"/>                    |
+| `Unionpay`   | <img src="./src/icons/unionpay/unionpay-flat-rounded.svg" width="80" alt="Unionpay"/>           |
+| `Visa`       | <img src="./src/icons/visa/visa-flat-rounded.svg" width="80" alt="Visa"/>                       |
+| `Generic`    | <img src="./src/icons/generic/generic-flat-rounded.svg" width="80" alt="Generic"/>              |
+| `Code`       | <img src="./src/icons/generic/code-flat-rounded.svg" width="80" alt="Code"/>                       |
+| `CodeFront`  | <img src="./src/icons/generic/code-front-flat-rounded.svg" width="80" alt="Code Front"/>     |
 
 Images from [`aaronfagan/svg-credit-card-payment-icons`](https://github.com/aaronfagan/svg-credit-card-payment-icons)
 

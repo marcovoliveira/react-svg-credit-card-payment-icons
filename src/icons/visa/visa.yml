@@ -1,0 +1,18 @@
+# Card validation definition for Visa
+type: Visa
+displayName: Visa
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers:
+  - '4242424242424242' # Standard test card
+  - '4000056655665556' # Debit card
+  - '4012888888881881' # Prepaid card
+patterns:
+  full: '^4[0-9]{12}(?:[0-9]{3})?$'
+  prefix: '^4'
+lengthRange:
+  min: 13
+  max: 19
+formatPattern: [4, 4, 4, 4] # Standard format: 1234 5678 9012 3456
+issuingCountries: [GLOBAL] # Globally issued in 200+ countries

@@ -18,9 +18,43 @@
   margin-bottom: 8px;
 }
 
-span {
+.grid-item > span:first-of-type {
+  display: block;
   font-family: sans-serif;
   font-size: 16px;
   font-weight: bold;
   color: #333;
+}
+
+.grid-item .aliases-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-item .aliases-label {
+  font-family: sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  color: #999;
+  margin-right: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.grid-item .alias-badge {
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 400;
+  color: #555;
+  background-color: #f8f8f8;
+  padding: 3px 6px;
+  border-radius: 3px;
+  border: 1px solid #e0e0e0;
+  white-space: nowrap;
 }

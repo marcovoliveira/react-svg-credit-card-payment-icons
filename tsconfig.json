@@ -4,7 +4,8 @@
   "compilerOptions": {
     "jsx": "react",
     "target": "es2022",
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "lib": ["es2022", "dom"],
     "declaration": true,
     "outDir": "dist",

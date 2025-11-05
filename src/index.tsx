@@ -6,7 +6,9 @@ import * as LogoBorderComponents from '../generated/icons/logo-border';
 import * as MonoComponents from '../generated/icons/mono';
 import * as MonoOutlineComponents from '../generated/icons/mono-outline';
 import type { SVGProps } from 'react';
+import { CARD_METADATA } from '../generated/cardMetadata';
 
+/** SVG component props with optional width and height. */
 export type SVGComponentProps = {
   width?: number;
   height?: number;
@@ -21,6 +23,15 @@ const categoryMappings = {
   monoOutline: MonoOutlineComponents,
 };
 
+/**
+ * Supported payment types: Visa, Mastercard, AmericanExpress, Discover, Paypal, etc.
+ * Includes generated alias components like Amex, Americanexpress, Cvv, Diners, etc.
+ *
+ * @example
+ * const type: PaymentType = 'Visa';
+ * const canonical: PaymentType = 'AmericanExpress'; // Valid PaymentType (canonical name)
+ * const alias: PaymentType = 'Amex'; // Valid PaymentType (alias)
+ */
 export type PaymentType = keyof typeof FlatComponents &
   keyof typeof FlatRoundedComponents &
   keyof typeof LogoComponents &
@@ -30,7 +41,7 @@ export type PaymentType = keyof typeof FlatComponents &
 
 type PaymentCategory = keyof typeof categoryMappings;
 
-// @deprecated Use PaymentType instead
+/** @deprecated Use PaymentType instead */
 export type PaymentTypeExtended = PaymentType | 'Generic' | 'Code';
 
 const defaultType = 'generic' as PaymentType;
@@ -40,31 +51,174 @@ const aspectRatio = 780 / 500; // Width / Height of the svgs.
 
 const defaultWidth = 40;
 
+/**
+ * Resolves a type string (potentially an alias or variant) to its canonical PaymentType and optional variant slug.
+ *
+ * This function checks the card metadata for:
+ * 1. Exact type name matches (e.g., 'Visa', 'Mastercard')
+ * 2. Regular aliases (e.g., 'Amex' → 'Americanexpress')
+ * 3. Variant aliases (e.g., 'Hiper' → { type: 'Hipercard', variant: 'hiper' })
+ *
+ * @param input - The input type string (e.g., 'Amex', 'Visa', 'Hiper', 'Cvv')
+ * @returns Object with canonical type and optional variant slug
+ *
+ * @example
+ * resolveAlias('Visa')  // → { type: 'Visa' }
+ * resolveAlias('Amex')  // → { type: 'AmericanExpress' }
+ * resolveAlias('Hiper') // → { type: 'Hipercard', variant: 'hiper' }
+ */
+function resolveAlias(input: string): { type: string; variant?: string } {
+  // Search through card metadata for matching alias or variant
+  for (const card of CARD_METADATA) {
+    // Check if input matches the type name itself
+    if (card.type === input) {
+      return { type: card.type };
+    }
+
+    // Check if input matches a regular alias
+    if (card.aliases.some((alias) => alias === input)) {
+      return { type: card.type };
+    }
+
+    // Check if input matches a variant alias
+    if (card.variants) {
+      for (const [variantAlias, variantDef] of Object.entries(card.variants)) {
+        if (variantAlias === input) {
+          return { type: card.type, variant: variantDef.slug };
+        }
+      }
+    }
+  }
+
+  return { type: input };
+}
+
 type PaymentIconProps = {
-  type: PaymentType | 'Amex'; // Amex is an alias for Americanexpress
+  /**
+   * Payment card type or alias to render.
+   *
+   * Accepts:
+   * - Type names: 'Visa', 'Mastercard', 'Americanexpress', etc.
+   * - Aliases: 'Amex' (→ Americanexpress), 'Cvv' (→ Code), etc.
+   * - Variants: 'Hiper' (→ Hipercard hiper variant)
+   *
+   * All aliases and variants are defined in card YAML files and resolved automatically.
+   */
+  type: PaymentType;
+  /**
+   * Icon style format.
+   *
+   * @default 'flat'
+   */
   format?: PaymentCategory;
+  /**
+   * Optional variant slug to use for cards with multiple visual styles.
+   *
+   * Example: `variant="hiper"` renders the Hiper-branded version of Hipercard.
+   *
+   * Note: Variant aliases (like 'Hiper') automatically select the variant,
+   * so this prop is only needed when using the base type name with explicit variant selection.
+   *
+   * @example
+   * <PaymentIcon type="Hipercard" variant="hiper" />  // Explicit variant
+   * <PaymentIcon type="Hiper" />                      // Automatic via alias
+   */
+  variant?: string;
 } & SVGProps<SVGSVGElement>;
 
+/**
+ * Payment icon component with automatic sizing, format selection, and alias/variant resolution.
+ *
+ * Features:
+ * - Maintains 780:500 aspect ratio automatically
+ * - Resolves aliases and variants from card definitions
+ * - Supports 6 visual formats (flat, flatRounded, logo, logoBorder, mono, monoOutline)
+ * - Falls back to Generic icon for unsupported types
+ * - Accepts all standard SVG props (className, style, onClick, etc.)
+ *
+ * @param props - Component props including type, format, variant, and standard SVG attributes
+ * @returns React component rendering the appropriate payment card icon
+ *
+ * @example
+ * Basic usage with type names
+ * ```tsx
+ * <PaymentIcon type="Visa" />
+ * <PaymentIcon type="Mastercard" format="logo" width={100} />
+ * <PaymentIcon type="Americanexpress" format="flatRounded" />
+ * ```
+ *
+ * @example
+ * Using aliases (resolved automatically)
+ * ```tsx
+ * <PaymentIcon type="Amex" />           // → Americanexpress
+ * <PaymentIcon type="Cvv" />            // → Code (back security code)
+ * <PaymentIcon type="Card" />           // → Generic
+ * ```
+ *
+ * @example
+ * Using variants
+ * ```tsx
+ * // Method 1: Use variant alias directly (recommended)
+ * <PaymentIcon type="Hiper" />
+ *
+ * // Method 2: Use base type with explicit variant prop
+ * <PaymentIcon type="Hipercard" variant="hiper" />
+ *
+ * // Both render the Hiper-branded logo (hiper-*.svg files)
+ * // Default type="Hipercard" renders hipercard-*.svg files
+ * ```
+ *
+ * @example
+ * Direct component imports (tree-shakeable)
+ * ```tsx
+ * import { Hiper, Hipercard, Visa } from 'react-svg-credit-card-payment-icons/icons/flat';
+ * <Hiper />      // Hiper variant component
+ * <Hipercard />  // Default Hipercard component
+ * <Visa />       // Visa component
+ * ```
+ *
+ * @see {@link https://github.com/marcovoliveira/react-svg-credit-card-payment-icons | GitHub Repository}
+ */
 export function PaymentIcon(props: PaymentIconProps): JSX.Element {
   const category = (props.format || defaultCategory) as PaymentCategory;
   if (!categoryMappings[category])
     throw new Error(
       `Invalid category: ${category} please use one of ${Object.keys(categoryMappings).join(', ')}`
     );
-  const formatedType = props.type?.toLowerCase() ?? defaultType;
-  const sanitizedType = (formatedType || defaultType).replace(/[-_]/g, '');
-  let normalizedType = sanitizedType.charAt(0).toUpperCase() + sanitizedType.slice(1);
 
-  // Alias: Amex -> Americanexpress
-  if (normalizedType === 'Amex') {
-    normalizedType = 'Americanexpress';
-  }
+  // Resolve alias to canonical type and variant
+  const inputType = props.type || defaultType;
+  const resolved = resolveAlias(inputType);
+  const sanitizedType = resolved.type.replace(/[-_]/g, '');
+  const normalizedType = sanitizedType.charAt(0).toUpperCase() + sanitizedType.slice(1);
 
-  const cardProvider = normalizedType as PaymentType;
   const categoryComponents = categoryMappings[category];
 
-  const Component: (props: SVGProps<SVGSVGElement>) => JSX.Element =
-    categoryComponents[cardProvider] ?? FlatRoundedComponents.Generic;
+  // Determine component key based on whether variant came from alias or explicit prop
+  let Component: (props: SVGProps<SVGSVGElement>) => JSX.Element | undefined;
+
+  if (resolved.variant && !props.variant) {
+    // Variant came from alias resolution - use original input type as component name
+    const sanitizedInput = inputType.replace(/[-_]/g, '');
+    const normalizedInput = sanitizedInput.charAt(0).toUpperCase() + sanitizedInput.slice(1);
+    Component = categoryComponents[normalizedInput as PaymentType];
+  } else if (props.variant) {
+    // Explicit variant prop - try composite key first, then variant alone
+    const sanitizedVariant = props.variant.replace(/[-_]/g, '');
+    const normalizedVariant = sanitizedVariant.charAt(0).toUpperCase() + sanitizedVariant.slice(1);
+    const compositeKey = `${normalizedType}${normalizedVariant}`;
+    Component =
+      categoryComponents[compositeKey as PaymentType] ??
+      categoryComponents[normalizedVariant as PaymentType];
+  } else {
+    // No variant - use base type
+    Component = categoryComponents[normalizedType as PaymentType];
+  }
+
+  // Final fallback to Generic
+  if (!Component) {
+    Component = FlatRoundedComponents.Generic;
+  }
 
   const width =
     props.width ?? (props.height ? (props.height as number) * aspectRatio : defaultWidth);
@@ -82,7 +236,11 @@ export {
   isCardNumberPotentiallyValid,
   maskCardNumber,
   sanitizeCardNumber,
+  getCardsByCountry,
 } from './utils/cardUtils';
+
+// Export canonical card type for type checking
+export type { CanonicalCardType } from '../generated/cardMetadata';
 
 // Export individual icon components for tree-shaking
 export * as flat from '../generated/icons/flat';

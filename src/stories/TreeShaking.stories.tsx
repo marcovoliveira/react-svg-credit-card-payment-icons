@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
-import { Visa, Mastercard, Americanexpress } from '../../generated/icons/flat-rounded';
+import { Visa, Mastercard, AmericanExpress } from '../../generated/icons/flat-rounded';
 import { detectCardType } from '../utils/cardUtils';
 
 const meta = {
@@ -51,20 +51,20 @@ export const BasicUsage: Story = {
     <div style={{ display: 'flex', gap: '20px' }}>
       <Visa width={100} />
       <Mastercard width={100} />
-      <Americanexpress width={100} />
+      <AmericanExpress width={100} />
     </div>
   ),
   parameters: {
     docs: {
       source: {
-        code: `import { Visa, Mastercard, Americanexpress } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
+        code: `import { Visa, Mastercard, AmericanExpress } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
 
 function App() {
   return (
     <div style={{ display: 'flex', gap: '20px' }}>
       <Visa width={100} />
       <Mastercard width={100} />
-      <Americanexpress width={100} />
+      <AmericanExpress width={100} />
     </div>
   );
 }`,
@@ -102,7 +102,7 @@ export const WithCardDetection: Story = {
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
           {cardType === 'Visa' && <Visa width={60} data-testid="visa-icon" />}
           {cardType === 'Mastercard' && <Mastercard width={60} data-testid="mastercard-icon" />}
-          {cardType === 'Americanexpress' && <Americanexpress width={60} data-testid="amex-icon" />}
+          {cardType === 'AmericanExpress' && <AmericanExpress width={60} data-testid="amex-icon" />}
           {cardType && (
             <span style={{ fontSize: '18px', fontWeight: 'bold' }} data-testid="card-type">
               {cardType}
@@ -131,13 +131,13 @@ export const WithCardDetection: Story = {
     await userEvent.clear(input);
     await userEvent.type(input, '378282246310005');
     await expect(canvas.getByTestId('amex-icon')).toBeInTheDocument();
-    await expect(canvas.getByTestId('card-type')).toHaveTextContent('Americanexpress');
+    await expect(canvas.getByTestId('card-type')).toHaveTextContent('AmericanExpress');
   },
   parameters: {
     docs: {
       source: {
         code: `import { detectCardType } from 'react-svg-credit-card-payment-icons';
-import { Visa, Mastercard, Americanexpress } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
+import { Visa, Mastercard, AmericanExpress } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
 
 function PaymentForm() {
   const [cardNumber, setCardNumber] = useState('');
@@ -153,7 +153,7 @@ function PaymentForm() {
 
       {cardType === 'Visa' && <Visa width={60} />}
       {cardType === 'Mastercard' && <Mastercard width={60} />}
-      {cardType === 'Americanexpress' && <Americanexpress width={60} />}
+      {cardType === 'AmericanExpress' && <AmericanExpress width={60} />}
     </div>
   );
 }`,
@@ -181,7 +181,7 @@ export const AllAvailableIcons: Story = {
       >
         {[
           'Alipay',
-          'Americanexpress',
+          'AmericanExpress',
           'Code',
           'CodeFront',
           'Diners',
@@ -216,7 +216,7 @@ export const AllAvailableIcons: Story = {
 import {
   Visa,
   Mastercard,
-  Americanexpress,
+  AmericanExpress,
   Discover,
   // ... etc
 } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';`,

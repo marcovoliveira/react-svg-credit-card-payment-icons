@@ -24,8 +24,10 @@ export default defineConfig({
       setup(build) {
         // Resolve .svg?react imports
         build.onResolve({ filter: /\.svg\?react$/ }, (args) => {
+          // Robust URL parsing to handle query parameters
+          const [filePath] = args.path.split('?');
           return {
-            path: path.resolve(args.resolveDir, args.path.replace('?react', '')),
+            path: path.resolve(args.resolveDir, filePath),
             namespace: 'svgr',
           };
         });
@@ -37,7 +39,7 @@ export default defineConfig({
           const componentCode = await transform(
             svg,
             {
-              typescript: false,
+              typescript: true,
               plugins: ['@svgr/plugin-jsx'],
               jsx: {
                 babelConfig: {
@@ -53,7 +55,7 @@ export default defineConfig({
 
           return {
             contents: componentCode,
-            loader: 'jsx',
+            loader: 'tsx',
           };
         });
       },

@@ -1,0 +1,27 @@
+# Generic card - includes variants for front, back (CVV), and front with security code
+type: Generic
+displayName: Generic Card
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases:
+  - GenericCard
+variants:
+  Code:
+    slug: code
+    displayName: Generic Card (Back) - Security Code
+    aliases:
+      - Cvv
+      - Cvc
+  CodeFront:
+    slug: code-front
+    displayName: Generic Card (Front) - Security Code
+    aliases:
+      - CvvFront
+      - CvcFront
+testNumbers: []
+patterns:
+  full: null
+  prefix: null
+lengthRange: null
+formatPattern: null # Not a physical card
+issuingCountries: null # Generic card representation
