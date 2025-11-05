@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/marcovoliveira/react-svg-credit-card-payment-icons/schemas/card-metadata.schema.json",
+  "$id": "https://raw.githubusercontent.com/marcovoliveira/react-svg-credit-card-payment-icons/main/schemas/card-metadata.schema.json",
   "title": "Payment Card Metadata",
   "description": "Schema for payment card YAML configuration files",
   "type": "object",
