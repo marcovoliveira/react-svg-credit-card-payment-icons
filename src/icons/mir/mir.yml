@@ -1,0 +1,18 @@
+# Card validation definition for Mir
+type: Mir
+displayName: Mir
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers:
+  - '2200000000000004' # Mir test (QIWI)
+  - '2200000000000012' # Mir test (QIWI)
+  - '2202207558945880' # Mir test (Apexx/Ingenico)
+patterns:
+  full: '^220[0-4][0-9]{12}$'
+  prefix: '^220[0-4]'
+lengthRange:
+  min: 16
+  max: 16
+formatPattern: [4, 4, 4, 4] # Standard format: 1234 5678 9012 3456
+issuingCountries: [RU] # Russia

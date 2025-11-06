@@ -2,12 +2,99 @@
 
 ## Unreleased
 
+## 5.1.0
+
+Contributed by @codybrom.
+
+### Deprecations
+
+- **`detectCardType()` is now deprecated** in favor of the new `getCardType()` function:
+  - `detectCardType()` continues to work and returns legacy v4.x type names (`'Americanexpress'`, `'Diners'`, `'Unionpay'`, `'Paypal'`, `'Jcb'`)
+  - New `getCardType()` function returns canonical type names (`'AmericanExpress'`, `'DinersClub'`, `'UnionPay'`, `'PayPal'`, `'JCB'`)
+  - Migration is optional - both functions will continue to work
+  - Recommended migration:
+
+    ```javascript
+    // v4/v5 (deprecated but still works)
+    const type = detectCardType(cardNumber); // 'Americanexpress'
+
+    // v5+ (recommended)
+    const type = getCardType(cardNumber);    // 'AmericanExpress'
+    ```
+
+  - **Component usage**: `<PaymentIcon type="..." />` accepts all type names and aliases (`Amex`, `Diners`, `Americanexpress`, `AmericanExpress`, etc.) for full compatibility
+
+### Major Changes
+
+- JSON Schema Validation for Card Metadata
+  - Added JSON schema (`schemas/card-metadata.schema.json`) for YAML configuration validation
+  - VS Code integration provides autocomplete and validation for card YAML files
+  - Ensures correct field types and required properties
+  - Helpful descriptions and examples for each field
+
+- Card Variant Support
+  - Added support for card variants through YAML configuration
+  - Variant aliases automatically resolve to the correct visual style
+  - Example: `<PaymentIcon type="Hiper" />` automatically uses the Hiper-branded variant
+  - Explicit variant prop also supported: `<PaymentIcon type="Hipercard" variant="hiper" />`
+  - Variants can have their own display names, authors, licenses, and aliases
+  - Hiper and Hipercard variants now properly distinguished:
+    - `Hiper` - Orange/yellow branded Hiper logo
+    - `Hipercard` - Standard Hipercard branding
+    - Both Hiper variants share the same IIN ranges but have distinct visual identities
+  - Code and CodeFront are now variants of Generic:
+    - `Generic` - Standard generic card front
+    - `Code` (aliases: `Cvv`, `Cvc`) - Generic card back with security code
+    - `CodeFront` (aliases: `CvvFront`, `CvcFront`) - Generic card front with security code
+  - Tree-shakeable variant imports: `import { Hiper, Hipercard, Code, CodeFront } from 'react-svg-credit-card-payment-icons/icons/flat-rounded'`
+
+- Unified Icon Components with Dynamic Format Selection
+  - Added individual icon components with `format` and `variant` props: `<VisaIcon format="flatRounded" variant="hiper" />`
+  - All card types also available as dedicated components with "Icon" suffix for clearer semantics
+  - Full TypeScript IntelliSense support with per-vendor format type unions
+  - Still backward compatible with existing `PaymentIcon` component
+
+- Format-Specific Icon Components
+  - Added format-specific components for all card types and formats for smallest possible bundle size (only includes the specific format needed)
+  - Examples: `VisaFlatIcon`, `VisaFlatRoundedIcon`, `VisaLogoIcon`, `MastercardMonoIcon`
+  - Supports Variant props on format-specific components: `<HipercardFlatRoundedIcon variant="Hiper" />`
+
+- Vendor-Specific Package Exports
+  - Added vendor-specific import paths for all payment networks
+  - No configuration import for each format for a specific vendor: `import { VisaFlatIcon, VisaLogoIcon } from 'react-svg-credit-card-payment-icons/visa'`
+
+- Fully Dynamic Build System
+  - No hardcoding of formats or vendors throughout the system
+  - Formats automatically discovered from filesystem during build
+  - New formats can be added by simply adding SVG files
+  - Dynamic tsup entry point generation
+  - Tests automatically adapt to new formats without code changes
+
+### Minor Changes
+
+- Storybook v10 Upgrade (PR #1)
+  - Upgraded Storybook from v9.1.10 to v10.0.4
+  - ESM-only distribution with 29% smaller installation size
+  - Migrated from renderer-based to framework-based configuration
+  - Added eslint-plugin-storybook for enhanced linting
+  - Updated TypeScript configuration to support ESM modules (moduleResolution: bundler)
+  - Improved documentation and component stories
+
+### Patch Changes
+
+- Fixed component resolution logic to properly handle variant aliases
+- Fixed test failures in Storybook interaction tests for Hiper color validation
+- Updated icon paths in documentation to reflect new hipercard folder structure
+- Enhanced generator to use YAML `type` field for component naming, allowing precise control over casing
+
+## 5.0.0
+
 @codybrom contributed a major refactor to the library, improving architecture, developer experience, and bundle optimization.
 
 ### Major Changes
 
 - Architecture Refactor (PR #18)
-  - Complete modernization of library architecture without breaking changes
+  - Complete modernization of library architecture
   - Vendor-based icon organization for easier maintenance
   - Build-time component generation using `@svgr/core` using pre-hooks
   - Removed ~200 files of generalizable components from version control
@@ -64,7 +151,7 @@
 
 ### Major Changes
 
-- Thanks to Adrian Rubio we have mastercard, maestro and visa new cards frollowing brand guidelines, also added code front, code and generic to logo-border and logo types. PaymentTypesExtended is deprecated and you should use PaymentTypes type that contains the same set of types.
+- Thanks to Adrian Rubio we have mastercard, maestro and visa new cards following brand guidelines, also added code front, code and generic to logo-border and logo types. PaymentTypesExtended is deprecated and you should use PaymentTypes type that contains the same set of types.
 
 ## 2.1.3
 

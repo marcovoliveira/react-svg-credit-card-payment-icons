@@ -13,8 +13,8 @@ docs/
 package-lock.json
 yarn.lock
 
-# Generated component wrappers (only for Storybook dev mode)
-/generated/icons/
+# Generated component wrappers and metadata
+generated/
 
 # Test outputs
 coverage/

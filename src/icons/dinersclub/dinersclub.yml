@@ -1,0 +1,25 @@
+# Card validation definition for Diners Club
+type: DinersClub
+legacyType: Diners # Auto-added as alias
+displayName: Diners Club
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers:
+  - '3056930009020004' # 16-digit (Stripe)
+  - '30569309025904' # 14-digit (Stripe)
+  - '38520000023237' # 14-digit (Stripe)
+  - '36227206271667' # 14-digit (Stripe)
+patterns:
+  full:
+    - '^3[0689][0-9]{12}$' # 14-digit
+    - '^30[0-5][0-9]{11}$' # 14-digit
+    - '^3[0689][0-9]{14}$' # 16-digit
+  prefix: '^3(0[0-5]|6|8)'
+lengthRange:
+  min: 14
+  max: 16
+formatPattern:
+  14: [4, 6, 4] # Traditional Diners format: 3056 930902 5904
+  16: [4, 4, 4, 4] # MasterCard co-branded format: 3056 9300 0902 0004
+issuingCountries: [US] # Originated in United States

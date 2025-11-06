@@ -1,0 +1,17 @@
+# Card validation definition for JCB
+type: JCB
+legacyType: Jcb # Auto-added as alias
+displayName: JCB
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers:
+  - '3566002020360505' # Standard (Stripe)
+patterns:
+  full: '^(?:2131|1800|35[0-9]{3})[0-9]{11}$'
+  prefix: '^(2131|1800|35)'
+lengthRange:
+  min: 15
+  max: 16
+formatPattern: [4, 4, 4, 4] # Standard format: 1234 5678 9012 3456
+issuingCountries: [JP] # Japan

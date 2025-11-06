@@ -1,0 +1,25 @@
+# Card validation definition for Hipercard
+# Shares the same IIN ranges with Hiper and cannot be distinguished by card number alone
+type: Hipercard
+displayName: Hipercard
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+variants:
+  Hiper:
+    slug: hiper
+    displayName: Hiper
+    iconAuthor: Aaron Fagan
+    iconLicense: Apache-2.0
+testNumbers:
+  - '6062825624254001' # Hipercard test (EBANX)
+  - '6062823936268330' # Hipercard test (EBANX)
+  - '6062828888666688' # Hipercard test (Adyen)
+patterns:
+  full: "^(606282\\d{10}(\\d{3})?)|(3841\\d{15})$"
+  prefix: '^(606282|3841)'
+lengthRange:
+  min: 16
+  max: 16
+formatPattern: [4, 4, 4, 4] # Standard format: 1234 5678 9012 3456
+issuingCountries: [BR] # Brazil

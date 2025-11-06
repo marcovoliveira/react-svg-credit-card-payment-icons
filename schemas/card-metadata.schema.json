@@ -1,0 +1,269 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/marcovoliveira/react-svg-credit-card-payment-icons/main/schemas/card-metadata.schema.json",
+  "title": "Payment Card Metadata",
+  "description": "Schema for payment card YAML configuration files",
+  "type": "object",
+  "required": [
+    "type",
+    "iconAuthor",
+    "iconLicense",
+    "testNumbers",
+    "patterns",
+    "lengthRange",
+    "formatPattern",
+    "issuingCountries"
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "The canonical component name in PascalCase (e.g., 'Visa', 'DinersClub', 'Hipercard'). This determines the generated TypeScript component name.",
+      "pattern": "^[A-Z][a-zA-Z0-9]*$",
+      "examples": ["Visa", "Mastercard", "DinersClub", "Hipercard"]
+    },
+    "legacyType": {
+      "type": "string",
+      "description": "The v4.x type name for backward compatibility. When specified, detectCardType() will return this value instead of 'type' to maintain backward compatibility with existing code. Used for types that were renamed in v5 (e.g., 'Americanexpress' for AmericanExpress, 'Diners' for DinersClub).",
+      "pattern": "^[A-Z][a-zA-Z0-9]*$",
+      "examples": ["Americanexpress", "Diners"]
+    },
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable name shown in documentation",
+      "examples": ["Visa", "Diners Club", "American Express"]
+    },
+    "iconAuthor": {
+      "type": "string",
+      "description": "Original SVG creator's name",
+      "examples": ["Aaron Fagan", "Icon Designer Name"]
+    },
+    "iconLicense": {
+      "type": "string",
+      "description": "License for the SVG files",
+      "enum": ["Apache-2.0", "MIT", "CC0-1.0", "CC-BY-4.0"],
+      "default": "Apache-2.0"
+    },
+    "aliases": {
+      "type": "array",
+      "description": "Alternative names that resolve to this card type (e.g., 'Amex' → 'Americanexpress')",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][a-zA-Z0-9]*$"
+      },
+      "uniqueItems": true,
+      "examples": [["Amex"], ["Diners"], ["Cvv", "Cvc"]]
+    },
+    "variants": {
+      "type": "object",
+      "description": "Card variants with different visual styles (e.g., Hiper variant of Hipercard)",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["slug"],
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "The file name prefix for this variant's SVG files (lowercase with hyphens)",
+            "pattern": "^[a-z][a-z0-9-]*$",
+            "examples": ["hiper", "classic", "modern", "code", "code-front"]
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Human-readable name for this variant (optional, defaults to variant alias name)",
+            "examples": ["CVV Code", "Front Security Code", "Hiper Brand"]
+          },
+          "iconAuthor": {
+            "type": "string",
+            "description": "SVG creator's name for this variant (optional, inherits from parent if not specified)",
+            "examples": ["Aaron Fagan", "Designer Name"]
+          },
+          "iconLicense": {
+            "type": "string",
+            "description": "License for this variant's SVG files (optional, inherits from parent if not specified)",
+            "enum": ["Apache-2.0", "MIT", "CC0-1.0", "CC-BY-4.0"]
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Additional aliases that resolve to this specific variant",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z][a-zA-Z0-9]*$"
+            },
+            "uniqueItems": true,
+            "examples": [
+              ["Cvv", "Cvc"],
+              ["CvvFront", "CvcFront"]
+            ]
+          }
+        }
+      },
+      "examples": [
+        {
+          "Hiper": {
+            "slug": "hiper"
+          }
+        }
+      ]
+    },
+    "testNumbers": {
+      "type": "array",
+      "description": "Valid test card numbers for unit tests (must pass Luhn validation). Use industry-standard test numbers from Stripe or payment processor documentation. Empty array for non-card payment methods.",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9]{13,19}$"
+      },
+      "uniqueItems": true,
+      "examples": [["4242424242424242"], ["5555555555554444"], ["378282246310005"], []]
+    },
+    "patterns": {
+      "type": "object",
+      "description": "Regular expressions for card number detection and validation",
+      "required": ["full", "prefix"],
+      "properties": {
+        "full": {
+          "description": "Complete validation pattern(s). Use a string for a single pattern, or an array for multiple patterns. Use null for generic/non-validated cards.",
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Single regex pattern for full validation"
+            },
+            {
+              "type": "array",
+              "description": "Multiple regex patterns (card matches if any pattern matches)",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            {
+              "type": "null",
+              "description": "No validation pattern (for generic cards)"
+            }
+          ],
+          "examples": [
+            "^4[0-9]{12}(?:[0-9]{3})?$",
+            ["^3[0689][0-9]{12}$", "^30[0-5][0-9]{11}$"],
+            null
+          ]
+        },
+        "prefix": {
+          "description": "Quick prefix check pattern for early detection. Use null for generic/non-validated cards.",
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Regex pattern matching the card number prefix"
+            },
+            {
+              "type": "null",
+              "description": "No prefix pattern (for generic cards)"
+            }
+          ],
+          "examples": ["^4", "^5[1-5]", "^3(0[0-5]|6|8)", null]
+        }
+      }
+    },
+    "lengthRange": {
+      "description": "Valid card number length constraints. Use null for cards without specific length requirements.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["min", "max"],
+          "properties": {
+            "min": {
+              "type": "integer",
+              "description": "Minimum number of digits",
+              "minimum": 12,
+              "maximum": 19
+            },
+            "max": {
+              "type": "integer",
+              "description": "Maximum number of digits",
+              "minimum": 12,
+              "maximum": 19
+            }
+          }
+        },
+        {
+          "type": "null",
+          "description": "No length requirement (for generic cards)"
+        }
+      ],
+      "examples": [
+        { "min": 16, "max": 16 },
+        { "min": 13, "max": 19 },
+        { "min": 12, "max": 19 },
+        null
+      ]
+    },
+    "formatPattern": {
+      "description": "Spacing pattern for displaying the card number. Use array for fixed-length cards, object for variable-length cards, or null for non-card payment methods.",
+      "oneOf": [
+        {
+          "type": "array",
+          "description": "Array of integers representing digit group sizes (e.g., [4, 4, 4, 4] for '4242 4242 4242 4242')",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 19
+          },
+          "minItems": 1,
+          "maxItems": 5
+        },
+        {
+          "type": "object",
+          "description": "Length-specific format patterns for variable-length cards (e.g., Diners Club with 14 and 16 digits)",
+          "patternProperties": {
+            "^[0-9]+$": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 19
+              },
+              "minItems": 1,
+              "maxItems": 5
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 1
+        },
+        {
+          "type": "null",
+          "description": "No specific formatting pattern (for non-card payment methods)"
+        }
+      ],
+      "examples": [[4, 4, 4, 4], [4, 6, 5], { "14": [4, 6, 4], "16": [4, 4, 4, 4] }, null]
+    },
+    "issuingCountries": {
+      "description": "ISO 3166-1 alpha-2 country/region codes where this card is issued. Use ['GLOBAL'] for globally issued cards (Visa, Mastercard, Maestro), specific country codes for regional cards (['BR'], ['CN']), or null for digital payment methods without physical cards.",
+      "oneOf": [
+        {
+          "type": "array",
+          "description": "Array of country codes. Use 'GLOBAL' for globally issued cards.",
+          "items": {
+            "type": "string",
+            "pattern": "^([A-Z]{2}|GLOBAL)$",
+            "description": "Two-letter uppercase ISO 3166-1 alpha-2 country code, or 'GLOBAL' for globally issued"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        {
+          "type": "null",
+          "description": "No regional restrictions (for digital-only payment methods like PayPal)"
+        }
+      ],
+      "examples": [
+        ["GLOBAL"],
+        ["US"],
+        ["BR"],
+        ["CN"],
+        ["JP"],
+        ["RU"],
+        ["SE"],
+        ["US", "CA", "GB"],
+        null
+      ]
+    }
+  },
+  "additionalProperties": false
+}

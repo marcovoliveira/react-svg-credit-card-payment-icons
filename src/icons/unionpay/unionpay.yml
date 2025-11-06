@@ -1,0 +1,19 @@
+# Card validation definition for UnionPay
+type: UnionPay
+legacyType: Unionpay # Auto-added as alias
+displayName: UnionPay
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers:
+  - '6200000000000005' # Standard (Stripe)
+  - '6200000000000047' # Debit (Stripe)
+  - '6205500000000000004' # 19-digit (Stripe)
+patterns:
+  full: '^62[0-9]{14,17}$'
+  prefix: '^62'
+lengthRange:
+  min: 16
+  max: 19
+formatPattern: [4, 4, 4, 4] # Standard format: 1234 5678 9012 3456
+issuingCountries: [CN] # China
