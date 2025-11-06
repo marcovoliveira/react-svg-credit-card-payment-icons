@@ -1,6 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { PaymentIcon } from './index';
+import * as UnifiedIcons from '../generated/unifiedIcons';
+import { AVAILABLE_FORMATS } from '../generated/unifiedIcons';
+import { CARD_METADATA } from '../generated/cardMetadata';
+import type { SVGProps } from 'react';
 
 describe('PaymentIcon alias and variant resolution', () => {
   describe('Type aliases', () => {
@@ -39,13 +43,13 @@ describe('PaymentIcon alias and variant resolution', () => {
       expect(container.querySelector('svg')).toBeInTheDocument();
     });
 
-    it('resolves Cvv alias to Code variant', () => {
-      const { container } = render(<PaymentIcon type="Cvv" />);
+    it('resolves CvvBack alias to Code variant', () => {
+      const { container } = render(<PaymentIcon type="CvvBack" />);
       expect(container.querySelector('svg')).toBeInTheDocument();
     });
 
-    it('resolves Cvc alias to Code variant', () => {
-      const { container } = render(<PaymentIcon type="Cvc" />);
+    it('resolves CvcBack alias to Code variant', () => {
+      const { container } = render(<PaymentIcon type="CvcBack" />);
       expect(container.querySelector('svg')).toBeInTheDocument();
     });
 
@@ -147,6 +151,125 @@ describe('PaymentIcon alias and variant resolution', () => {
       // Width should be calculated based on 780/500 aspect ratio
       const expectedWidth = 64 * (780 / 500);
       expect(svg).toHaveAttribute('width', expectedWidth.toString());
+    });
+  });
+});
+
+describe('Unified Icon Components (Dynamic Tests)', () => {
+  // Get all icon component names that end with "Icon"
+  const unifiedIconNames = Object.keys(UnifiedIcons).filter(
+    (name) =>
+      name.endsWith('Icon') && typeof UnifiedIcons[name as keyof typeof UnifiedIcons] === 'function'
+  );
+
+  describe('Format-specific unified icons', () => {
+    it.each(unifiedIconNames)('%s component renders without format prop', (iconName) => {
+      const Component = UnifiedIcons[iconName as keyof typeof UnifiedIcons] as React.ComponentType<
+        SVGProps<SVGSVGElement>
+      >;
+
+      // Skip if it requires format prop (dynamic format selection components)
+      // These have lowercase first letter in camelCase or are base Icon components
+      if (iconName.match(/^[A-Z][a-z]+Icon$/)) {
+        const { container } = render(<Component />);
+        expect(container.querySelector('svg')).toBeInTheDocument();
+      }
+    });
+
+    it('renders all style-specific icon components (e.g., VisaFlatIcon, VisaLogoIcon)', () => {
+      // Get all format-specific components (e.g., VisaFlatIcon, not VisaIcon)
+      const formatSpecificIcons = unifiedIconNames.filter((name) => {
+        const match = name.match(
+          /^([A-Z][a-z]+)(Flat|Logo|Mono|FlatRounded|LogoBorder|MonoOutline)Icon$/
+        );
+        return match !== null;
+      });
+
+      expect(formatSpecificIcons.length).toBeGreaterThan(0);
+
+      formatSpecificIcons.forEach((iconName) => {
+        const Component = UnifiedIcons[
+          iconName as keyof typeof UnifiedIcons
+        ] as React.ComponentType<SVGProps<SVGSVGElement>>;
+        const { container } = render(<Component />);
+        expect(container.querySelector('svg')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Format prop on unified icons', () => {
+    // Test format prop on base Icon components (e.g., VisaIcon, MastercardIcon)
+    const baseIconNames = unifiedIconNames.filter((name) => {
+      // Match pattern like VisaIcon, MastercardIcon (not VisaFlatIcon)
+      const baseName = name.replace(/Icon$/, '');
+      return (
+        name.endsWith('Icon') &&
+        !name.match(/(Flat|Logo|Mono|FlatRounded|LogoBorder|MonoOutline)Icon$/) &&
+        baseName.length > 0
+      );
+    });
+
+    it.each(baseIconNames)('%s accepts format prop', (iconName) => {
+      const Component = UnifiedIcons[iconName as keyof typeof UnifiedIcons] as React.ComponentType<
+        SVGProps<SVGSVGElement>
+      >;
+      const formats = ['flat', 'logo', 'mono'];
+
+      formats.forEach((format) => {
+        const { container } = render(<Component format={format} />);
+        expect(container.querySelector('svg')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Variant prop on components with variants', () => {
+    it('HipercardFlatIcon accepts Hiper variant', () => {
+      const { container: container1 } = render(<UnifiedIcons.HipercardFlatIcon />);
+      expect(container1.querySelector('svg')).toBeInTheDocument();
+
+      const { container: container2 } = render(<UnifiedIcons.HipercardFlatIcon variant="Hiper" />);
+      expect(container2.querySelector('svg')).toBeInTheDocument();
+    });
+
+    it('HipercardLogoIcon accepts Hiper variant', () => {
+      const { container: container1 } = render(<UnifiedIcons.HipercardLogoIcon />);
+      expect(container1.querySelector('svg')).toBeInTheDocument();
+
+      const { container: container2 } = render(<UnifiedIcons.HipercardLogoIcon variant="Hiper" />);
+      expect(container2.querySelector('svg')).toBeInTheDocument();
+    });
+
+    it('GenericFlatIcon accepts Code and CodeFront variants', () => {
+      const { container: container1 } = render(<UnifiedIcons.GenericFlatIcon />);
+      expect(container1.querySelector('svg')).toBeInTheDocument();
+
+      const { container: container2 } = render(<UnifiedIcons.GenericFlatIcon variant="Code" />);
+      expect(container2.querySelector('svg')).toBeInTheDocument();
+
+      const { container: container3 } = render(
+        <UnifiedIcons.GenericFlatIcon variant="CodeFront" />
+      );
+      expect(container3.querySelector('svg')).toBeInTheDocument();
+    });
+  });
+
+  describe('All card types render in all available formats', () => {
+    // Dynamically test all card types across all formats
+    const cardTypes = CARD_METADATA.map((card) => card.type);
+    const formats = AVAILABLE_FORMATS;
+
+    it.each(cardTypes)('%s renders in all available formats', (cardType) => {
+      formats.forEach((format) => {
+        const iconName = `${cardType}Icon`;
+        const Component = UnifiedIcons[
+          iconName as keyof typeof UnifiedIcons
+        ] as React.ComponentType<SVGProps<SVGSVGElement>>;
+
+        if (Component) {
+          const { container } = render(<Component format={format} />);
+          expect(container.querySelector('svg')).toBeInTheDocument();
+        }
+      });
     });
   });
 });

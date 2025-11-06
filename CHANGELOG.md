@@ -48,6 +48,28 @@ Contributed by @codybrom.
     - `CodeFront` (aliases: `CvvFront`, `CvcFront`) - Generic card front with security code
   - Tree-shakeable variant imports: `import { Hiper, Hipercard, Code, CodeFront } from 'react-svg-credit-card-payment-icons/icons/flat-rounded'`
 
+- Unified Icon Components with Dynamic Format Selection
+  - Added individual icon components with `format` and `variant` props: `<VisaIcon format="flatRounded" variant="hiper" />`
+  - All card types also available as dedicated components with "Icon" suffix for clearer semantics
+  - Full TypeScript IntelliSense support with per-vendor format type unions
+  - Still backward compatible with existing `PaymentIcon` component
+
+- Format-Specific Icon Components
+  - Added format-specific components for all card types and formats for smallest possible bundle size (only includes the specific format needed)
+  - Examples: `VisaFlatIcon`, `VisaFlatRoundedIcon`, `VisaLogoIcon`, `MastercardMonoIcon`
+  - Supports Variant props on format-specific components: `<HipercardFlatRoundedIcon variant="Hiper" />`
+
+- Vendor-Specific Package Exports
+  - Added vendor-specific import paths for all payment networks
+  - No configuration import for each format for a specific vendor: `import { VisaFlatIcon, VisaLogoIcon } from 'react-svg-credit-card-payment-icons/visa'`
+
+- Fully Dynamic Build System
+  - No hardcoding of formats or vendors throughout the system
+  - Formats automatically discovered from filesystem during build
+  - New formats can be added by simply adding SVG files
+  - Dynamic tsup entry point generation
+  - Tests automatically adapt to new formats without code changes
+
 ### Minor Changes
 
 - Storybook v10 Upgrade (PR #1)

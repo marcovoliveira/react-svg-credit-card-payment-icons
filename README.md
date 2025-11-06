@@ -43,15 +43,74 @@ pnpm add react-svg-credit-card-payment-icons
 import { PaymentIcon } from 'react-svg-credit-card-payment-icons';
 
 const App = () => {
-  return <PaymentIcon type="visa" format="flatRounded" width={100} />;
+  return <PaymentIcon type="Visa" format="flatRounded" width={100} />;
 };
 ```
 
-**Note:** The `PaymentIcon` component bundles all 108 icons (~700KB). For better tree-shaking and smaller bundle sizes, use Option 2.
+**Note:** The `PaymentIcon` component bundles all icons. For better tree-shaking and smaller bundle sizes, use Option 2-4.
 
-### Option 2: Direct Icon Imports (Recommended for Bundle Size)
+### Option 2: Unified Icon Components with Format and Variant Props
 
-Import only the icons you need for optimal tree-shaking:
+Import individual icon components that accept a `format` prop for dynamic style selection:
+
+```tsx
+import { VisaIcon, MastercardIcon } from 'react-svg-credit-card-payment-icons';
+
+const App = () => {
+  return (
+    <>
+      <VisaIcon format="flatRounded" width={100} />
+      <MastercardIcon format="logo" width={100} />
+    </>
+  );
+};
+```
+
+Available formats: `flat`, `flatRounded`, `logo`, `logoBorder`, `mono`, `monoOutline`
+
+### Option 3: Format-Specific Icon Components (Recommended)
+
+Import format-specific components for the smallest bundle size and best TypeScript IntelliSense:
+
+```tsx
+import {
+  VisaFlatRoundedIcon,
+  MastercardLogoIcon,
+} from 'react-svg-credit-card-payment-icons';
+
+const App = () => {
+  return (
+    <>
+      <VisaFlatRoundedIcon width={100} />
+      <MastercardLogoIcon width={100} />
+    </>
+  );
+};
+```
+
+Available component suffixes: `FlatIcon`, `FlatRoundedIcon`, `LogoIcon`, `LogoBorderIcon`, `MonoIcon`, `MonoOutlineIcon`
+
+### Option 4: Vendor-Specific Imports
+
+Import all icon variants for a specific payment network:
+
+```tsx
+import { VisaFlatIcon, VisaLogoIcon, VisaMonoIcon } from 'react-svg-credit-card-payment-icons/visa';
+import { MastercardFlatRoundedIcon, MastercardLogoIcon } from 'react-svg-credit-card-payment-icons/mastercard';
+
+const App = () => {
+  return (
+    <>
+      <VisaFlatIcon width={100} />
+      <MastercardFlatRoundedIcon width={100} />
+    </>
+  );
+};
+```
+
+### Option 5: Format-Specific Path Imports (Legacy)
+
+Import from format-specific paths:
 
 ```tsx
 import {
@@ -86,7 +145,7 @@ Some payment cards have multiple visual styles or go by different names. The pac
 
 ```tsx
 <PaymentIcon type="Amex" />           // Resolves to AmericanExpress
-<PaymentIcon type="Cvv" />            // Resolves to Code (back CVV)
+<PaymentIcon type="CvvBack" />        // Resolves to Code (back CVV)
 <PaymentIcon type="Diners" />         // Resolves to DinersClub
 ```
 
@@ -105,7 +164,17 @@ The `Hiper` and `Hipercard` cards share the same IIN ranges but have distinct br
 - `Hiper` - Shows the Hiper-branded logo (orange/yellow colors)
 - `Hipercard` - Shows the Hipercard-branded logo
 
-Both methods produce the same result, but using the variant alias directly is more concise.
+**Format-Specific Components with Variants:**
+
+```tsx
+import { HipercardFlatRoundedIcon } from 'react-svg-credit-card-payment-icons';
+
+// Default Hipercard branding
+<HipercardFlatRoundedIcon width={80} />
+
+// Hiper variant branding
+<HipercardFlatRoundedIcon variant="Hiper" width={80} />
+```
 
 **Direct Imports with Variants:**
 
@@ -114,6 +183,15 @@ import { Hiper, Hipercard } from 'react-svg-credit-card-payment-icons/icons/flat
 
 <Hiper width={80} />      // Hiper-branded variant
 <Hipercard width={80} />  // Hipercard-branded variant
+```
+
+**Unified Icon Components with Variants:**
+
+```tsx
+import { HipercardIcon } from 'react-svg-credit-card-payment-icons';
+
+<HipercardIcon format="flatRounded" width={80} />
+<HipercardIcon format="logo" variant="Hiper" width={80} />
 ```
 
 ## 🔧 Card Utilities

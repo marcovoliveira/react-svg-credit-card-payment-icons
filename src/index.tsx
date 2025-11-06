@@ -140,19 +140,47 @@ type PaymentIconProps = {
  * @returns React component rendering the appropriate payment card icon
  *
  * @example
- * Basic usage with type names
+ * Method 1: PaymentIcon component (universal)
  * ```tsx
- * <PaymentIcon type="Visa" />
+ * import { PaymentIcon } from 'react-svg-credit-card-payment-icons';
+ *
+ * <PaymentIcon type="Visa" format="flatRounded" width={100} />
  * <PaymentIcon type="Mastercard" format="logo" width={100} />
- * <PaymentIcon type="Americanexpress" format="flatRounded" />
+ * ```
+ *
+ * @example
+ * Method 2: Unified icon components with format prop
+ * ```tsx
+ * import { VisaIcon, MastercardIcon } from 'react-svg-credit-card-payment-icons';
+ *
+ * <VisaIcon format="flatRounded" width={100} />
+ * <MastercardIcon format="logo" width={100} />
+ * ```
+ *
+ * @example
+ * Method 3: Format-specific components (recommended for smallest bundle)
+ * ```tsx
+ * import { VisaFlatRoundedIcon, MastercardLogoIcon } from 'react-svg-credit-card-payment-icons';
+ *
+ * <VisaFlatRoundedIcon width={100} />
+ * <MastercardLogoIcon width={100} />
+ * ```
+ *
+ * @example
+ * Method 4: Vendor-specific imports
+ * ```tsx
+ * import { VisaFlatRoundedIcon, VisaLogoIcon } from 'react-svg-credit-card-payment-icons/visa';
+ *
+ * <VisaFlatRoundedIcon width={100} />
+ * <VisaLogoIcon width={100} />
  * ```
  *
  * @example
  * Using aliases (resolved automatically)
  * ```tsx
- * <PaymentIcon type="Amex" />           // → Americanexpress
+ * <PaymentIcon type="Amex" />           // → AmericanExpress
  * <PaymentIcon type="Cvv" />            // → Code (back security code)
- * <PaymentIcon type="Card" />           // → Generic
+ * <PaymentIcon type="Diners" />         // → DinersClub
  * ```
  *
  * @example
@@ -164,17 +192,16 @@ type PaymentIconProps = {
  * // Method 2: Use base type with explicit variant prop
  * <PaymentIcon type="Hipercard" variant="hiper" />
  *
- * // Both render the Hiper-branded logo (hiper-*.svg files)
- * // Default type="Hipercard" renders hipercard-*.svg files
+ * // Method 3: Format-specific with variant
+ * <HipercardFlatRoundedIcon variant="Hiper" />
  * ```
  *
  * @example
- * Direct component imports (tree-shakeable)
+ * Legacy format-specific path imports (still supported)
  * ```tsx
- * import { Hiper, Hipercard, Visa } from 'react-svg-credit-card-payment-icons/icons/flat';
- * <Hiper />      // Hiper variant component
- * <Hipercard />  // Default Hipercard component
- * <Visa />       // Visa component
+ * import { Visa, Mastercard } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
+ * <Visa width={100} />
+ * <Mastercard width={100} />
  * ```
  *
  * @see {@link https://github.com/marcovoliveira/react-svg-credit-card-payment-icons | GitHub Repository}
@@ -250,3 +277,6 @@ export * as logo from '../generated/icons/logo';
 export * as logoBorder from '../generated/icons/logo-border';
 export * as mono from '../generated/icons/mono';
 export * as monoOutline from '../generated/icons/mono-outline';
+
+// Export unified icon components with format selection
+export * from '../generated/unifiedIcons';

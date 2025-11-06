@@ -2,9 +2,10 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { PaymentIcon } from './index';
 import { CARD_METADATA, type CardMetadata } from '../generated/cardMetadata';
+import { AVAILABLE_FORMATS } from '../generated/unifiedIcons';
 
 describe('PaymentIcon', () => {
-  const allFormats = ['flat', 'flatRounded', 'logo', 'logoBorder', 'mono', 'monoOutline'] as const;
+  const allFormats = AVAILABLE_FORMATS;
 
   describe('Basic rendering', () => {
     it('renders a payment icon with default props', () => {

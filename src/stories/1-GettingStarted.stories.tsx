@@ -1,7 +1,13 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
-import { PaymentIcon } from '../index';
+import {
+  PaymentIcon,
+  VisaIcon,
+  MastercardIcon,
+  VisaFlatRoundedIcon,
+  MastercardLogoIcon,
+} from '../index';
 
 const meta = {
   title: '1. Getting Started / Quick Start',
@@ -14,20 +20,34 @@ const meta = {
         component: `
 # Payment Icon Component
 
-A simple, flexible React component for displaying payment card icons.
+A simple, flexible React component for displaying payment card icons with multiple import methods for optimal bundle size.
 
 ## Features
-- 18 card types
-- 6 visual styles
-- Tree-shakeable direct imports
-- TypeScript support
+- 18+ card types with variant support
+- 6 visual styles (flat, flatRounded, logo, logoBorder, mono, monoOutline)
+- 4 flexible import methods
+- Tree-shakeable exports
+- TypeScript support with full IntelliSense
 - Card detection utilities
+- Vendor-specific imports
 
 ## Quick Example
 \`\`\`tsx
+// Method 1: Universal component
 import { PaymentIcon } from 'react-svg-credit-card-payment-icons';
+<PaymentIcon type="Visa" format="flatRounded" width={100} />
 
-<PaymentIcon type="visa" format="flatRounded" width={100} />
+// Method 2: Unified icon with format prop
+import { VisaIcon } from 'react-svg-credit-card-payment-icons';
+<VisaIcon format="flatRounded" width={100} />
+
+// Method 3: Format-specific (smallest bundle)
+import { VisaFlatRoundedIcon } from 'react-svg-credit-card-payment-icons';
+<VisaFlatRoundedIcon width={100} />
+
+// Method 4: Vendor-specific imports
+import { VisaFlatRoundedIcon, VisaLogoIcon } from 'react-svg-credit-card-payment-icons/visa';
+<VisaFlatRoundedIcon width={100} />
 \`\`\`
         `,
       },
@@ -351,6 +371,102 @@ export const ResponsiveSizing: Story = {
   },
 };
 
+export const NewImportMethods: Story = {
+  args: {
+    type: 'Visa',
+    width: 100,
+  },
+  render: () => (
+    <div>
+      <div style={{ marginBottom: '32px' }}>
+        <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px' }}>
+          Method 1: PaymentIcon Component (Universal)
+        </h3>
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '8px' }}>
+          <PaymentIcon type="Visa" format="flatRounded" width={100} />
+          <PaymentIcon type="Mastercard" format="logo" width={100} />
+        </div>
+        <pre
+          style={{ fontSize: '11px', background: '#f5f5f5', padding: '12px', borderRadius: '4px' }}
+        >
+          {`import { PaymentIcon } from 'react-svg-credit-card-payment-icons';
+
+<PaymentIcon type="Visa" format="flatRounded" width={100} />
+<PaymentIcon type="Mastercard" format="logo" width={100} />`}
+        </pre>
+      </div>
+
+      <div style={{ marginBottom: '32px' }}>
+        <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px' }}>
+          Method 2: Unified Icon Components with Format Prop
+        </h3>
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '8px' }}>
+          <VisaIcon format="flatRounded" width={100} />
+          <MastercardIcon format="logo" width={100} />
+        </div>
+        <pre
+          style={{ fontSize: '11px', background: '#f5f5f5', padding: '12px', borderRadius: '4px' }}
+        >
+          {`import { VisaIcon, MastercardIcon } from 'react-svg-credit-card-payment-icons';
+
+<VisaIcon format="flatRounded" width={100} />
+<MastercardIcon format="logo" width={100} />`}
+        </pre>
+      </div>
+
+      <div style={{ marginBottom: '32px' }}>
+        <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px' }}>
+          Method 3: Format-Specific Components (Recommended)
+        </h3>
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '8px' }}>
+          <VisaFlatRoundedIcon width={100} />
+          <MastercardLogoIcon width={100} />
+        </div>
+        <pre
+          style={{ fontSize: '11px', background: '#f5f5f5', padding: '12px', borderRadius: '4px' }}
+        >
+          {`import { VisaFlatRoundedIcon, MastercardLogoIcon } from 'react-svg-credit-card-payment-icons';
+
+<VisaFlatRoundedIcon width={100} />
+<MastercardLogoIcon width={100} />`}
+        </pre>
+        <div style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+          ✨ Best for bundle size - includes only the specific format you need
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px' }}>
+          Method 4: Vendor-Specific Imports
+        </h3>
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '8px' }}>
+          <VisaFlatRoundedIcon width={100} />
+          <VisaIcon format="logo" width={100} />
+        </div>
+        <pre
+          style={{ fontSize: '11px', background: '#f5f5f5', padding: '12px', borderRadius: '4px' }}
+        >
+          {`import { VisaFlatRoundedIcon, VisaLogoIcon } from 'react-svg-credit-card-payment-icons/visa';
+
+<VisaFlatRoundedIcon width={100} />
+<VisaLogoIcon width={100} />`}
+        </pre>
+        <div style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+          📦 Organize imports by payment network instead of format
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'v5.1.0 introduces four flexible import methods. Choose the one that best fits your use case. Format-specific components (Method 3) offer the smallest bundle size.',
+      },
+    },
+  },
+};
+
 export const CardVariants: Story = {
   args: {
     type: 'Hiper',
@@ -506,10 +622,10 @@ export const CardVariants: Story = {
               <div style={{ fontSize: '10px', color: '#999', marginTop: '2px' }}>→ DinersClub</div>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <PaymentIcon type="Cvv" format={format} width={width} />
+              <PaymentIcon type="CvvBack" format={format} width={width} />
               <div style={{ fontSize: '12px', marginTop: '8px', fontWeight: '500' }}>CVV</div>
               <div style={{ fontSize: '10px', color: '#666', marginTop: '4px' }}>
-                type=&quot;Cvv&quot;
+                type=&quot;CvvBack&quot;
               </div>
               <div style={{ fontSize: '10px', color: '#999', marginTop: '2px' }}>→ Code</div>
             </div>

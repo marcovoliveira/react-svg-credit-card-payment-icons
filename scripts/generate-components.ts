@@ -5,11 +5,76 @@ import path from 'path';
 import { transform } from '@svgr/core';
 import YAML from 'yaml';
 
-const STYLES = ['flat', 'flat-rounded', 'logo', 'logo-border', 'mono', 'mono-outline'] as const;
 const ICONS_DIR = 'src/icons';
 const TEMP_DIR = 'generated/icons';
 
-type Style = (typeof STYLES)[number];
+type Style = string;
+
+/**
+ * Discover all available styles/formats from the filesystem
+ * by scanning SVG filenames for both base vendor files and variant files
+ */
+function discoverStyles(): string[] {
+  const vendors = getVendorDirectories();
+  const styleSet = new Set<string>();
+
+  for (const vendor of vendors) {
+    const vendorPath = path.join(ICONS_DIR, vendor);
+    const files = fs.readdirSync(vendorPath).filter((file) => file.endsWith('.svg'));
+
+    // Get variant slugs from YAML metadata
+    const variants = getVariantsFromYAML(vendor);
+    const variantSlugs = variants.map((v) => v.slug);
+
+    // Collect all valid prefixes (vendor name + variant slugs)
+    // Sort by length descending to match longest/most specific prefix first
+    const validPrefixes = [vendor, ...variantSlugs].sort((a, b) => b.length - a.length);
+
+    for (const file of files) {
+      // Try to match against any valid prefix (longest/most specific first)
+      // This ensures code-front-flat.svg matches 'code-front' not 'code'
+      for (const prefix of validPrefixes) {
+        // Match exact prefix with dash separator: prefix-style.svg
+        const regex = new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}-(.*)\\.svg$`);
+        const styleMatch = file.match(regex);
+        if (styleMatch) {
+          // Verify the extracted style doesn't contain dashes that would indicate a wrong prefix match
+          // e.g., if we matched 'code' from 'code-front-flat.svg', we'd get 'front-flat' which has a dash
+          const extractedStyle = styleMatch[1];
+          // Check if this is a valid style by seeing if it's a known pattern
+          // Valid styles are things like: flat, flat-rounded, logo-border, mono-outline
+          // Invalid would be: front-flat (which means we matched the wrong prefix)
+
+          // Simple heuristic: if we're checking 'code' and got 'front-flat',
+          // 'front' is not a valid style prefix, so skip
+          // But 'flat-rounded' is valid because 'rounded' is a modifier
+          const styleParts = extractedStyle.split('-');
+          const validStylePrefixes = ['flat', 'logo', 'mono'];
+          const validStyleModifiers = ['rounded', 'border', 'outline'];
+
+          if (
+            styleParts.length === 1 ||
+            (styleParts.length === 2 &&
+              validStylePrefixes.includes(styleParts[0]) &&
+              validStyleModifiers.includes(styleParts[1]))
+          ) {
+            styleSet.add(extractedStyle);
+            break; // Found a valid match
+          }
+        }
+      }
+    }
+  }
+
+  return Array.from(styleSet).sort();
+}
+
+function getVendorDirectories(): string[] {
+  return fs.readdirSync(ICONS_DIR).filter((file) => {
+    const isDir = fs.statSync(path.join(ICONS_DIR, file)).isDirectory();
+    return isDir;
+  });
+}
 
 interface VariantDefinition {
   slug: string;
@@ -43,12 +108,23 @@ function pascalCase(str: string): string {
     .replace(/^(.)/, (_, c) => c.toUpperCase());
 }
 
-function getVendorDirectories(): string[] {
-  return fs.readdirSync(ICONS_DIR).filter((file) => {
-    const isDir = fs.statSync(path.join(ICONS_DIR, file)).isDirectory();
-    const isStyleDir = STYLES.includes(file as Style);
-    return isDir && !isStyleDir;
-  });
+/**
+ * Generate style name mappings for a given list of styles
+ * Converts kebab-case style names to PascalCase suffixes
+ */
+function generateStyleNameMappings(
+  styles: string[]
+): Record<string, { suffix: string; dir: string }> {
+  const mappings: Record<string, { suffix: string; dir: string }> = {};
+
+  for (const style of styles) {
+    mappings[style] = {
+      suffix: pascalCase(style),
+      dir: style,
+    };
+  }
+
+  return mappings;
 }
 
 function loadCardMetadata(vendor: string): CardYAML | null {
@@ -238,6 +314,11 @@ function generateIndexFile(
     (name) => `export { default as ${name} } from './${name}';`
   );
 
+  // Generate "Icon" suffix exports for each component
+  const iconSuffixExports = uniqueComponents.map((name) =>
+    [`/** @alias ${name} */`, `export { default as ${name}Icon } from './${name}';`].join('\n')
+  );
+
   // Generate alias exports
   const aliasExports: string[] = [];
   for (const [mainComponent, aliases] of aliasMap.entries()) {
@@ -253,9 +334,277 @@ function generateIndexFile(
     }
   }
 
-  const indexContent = [...mainExports, '', ...aliasExports].join('\n') + '\n';
+  const indexContent =
+    [...mainExports, '', ...iconSuffixExports, '', ...aliasExports].join('\n') + '\n';
 
   fs.writeFileSync(path.join(tempDir, 'index.ts'), indexContent);
+}
+
+function generateUnifiedIconsFile(vendors: string[], styles: string[]): void {
+  const componentEntries: string[] = [];
+  const exportNames: string[] = [];
+  const styleNameMappings = generateStyleNameMappings(styles);
+
+  for (const vendor of vendors) {
+    const cardMetadata = loadCardMetadata(vendor);
+    const componentName = cardMetadata?.type || pascalCase(vendor);
+
+    // Determine which formats actually exist for this vendor
+    const availableFormats: string[] = [];
+    const availableFormatsCamelCase: string[] = [];
+    for (const style of styles) {
+      const componentPath = path.join(TEMP_DIR, style, `${componentName}.tsx`);
+      if (fs.existsSync(componentPath)) {
+        const camelCase = style.replace(/-(.)/g, (_, c) => c.toUpperCase());
+        availableFormats.push(style);
+        availableFormatsCamelCase.push(camelCase);
+      }
+    }
+
+    // Skip if no formats exist
+    if (availableFormats.length === 0) continue;
+
+    // Build vendor-specific format type union (camelCase)
+    const vendorFormatTypeUnion = availableFormatsCamelCase.map((s) => `'${s}'`).join(' | ');
+    const defaultStyleCamelCase = availableFormatsCamelCase[0]; // Use first available format as default
+
+    const unifiedComponent = `/**
+ * ${componentName} payment icon with dynamic format selection.
+ *
+ * @param format - Icon style format: ${availableFormatsCamelCase.map((s) => `'${s}'`).join(', ')}
+ * @param props - Standard SVG element props
+ * @returns React component rendering the ${componentName} icon in the specified format
+ *
+ * @example
+ * \`\`\`tsx
+ * import { ${componentName}Icon } from 'react-svg-credit-card-payment-icons';
+ *
+ * <${componentName}Icon format="${defaultStyleCamelCase}" />
+ * <${componentName}Icon format="${availableFormatsCamelCase[1] || defaultStyleCamelCase}" width={100} />
+ * \`\`\`
+ */
+export function ${componentName}Icon({
+  format = '${defaultStyleCamelCase}',
+  ...props
+}: { format?: ${vendorFormatTypeUnion} } & SVGProps<SVGSVGElement>): JSX.Element {
+  const Component = formatMappings[format]?.${componentName};
+  if (!Component) throw new Error(\`${componentName} not available in format: \${format}\`);
+  return <Component {...props} />;
+}`;
+
+    componentEntries.push(unifiedComponent);
+    exportNames.push(`${componentName}Icon`);
+
+    // Check if this vendor has variants
+    const vendorVariants = getVariantsFromYAML(vendor);
+    const variantAliases = vendorVariants.map((v) => pascalCase(v.alias));
+    const hasVariants = variantAliases.length > 0;
+    const variantUnion = hasVariants ? variantAliases.map((v) => `'${v}'`).join(' | ') : 'never';
+
+    // Generate style-specific icon components (e.g., VisaFlatIcon, VisaLogoIcon)
+    // Only for formats that actually exist for this vendor
+    for (let i = 0; i < availableFormats.length; i++) {
+      const formatKey = availableFormats[i];
+      const formatKeyCamelCase = availableFormatsCamelCase[i];
+      const styleConfig = styleNameMappings[formatKey];
+      if (!styleConfig) continue;
+
+      const styleSpecificComponent = hasVariants
+        ? `
+/**
+ * ${componentName} ${styleConfig.suffix} icon with optional variant selection.
+ * @param variant - Optional variant: ${variantAliases.join(', ')}
+ * @alias ${componentName} from 'react-svg-credit-card-payment-icons/icons/${formatKey}'
+ */
+export function ${componentName}${styleConfig.suffix}Icon({ variant, ...props }: { variant?: ${variantUnion} } & SVGProps<SVGSVGElement>): JSX.Element {
+  const componentKey = variant || '${componentName}';
+  const Component = formatMappings.${formatKeyCamelCase}[componentKey];
+  if (!Component) throw new Error(\`\${componentKey} not available in format: ${formatKeyCamelCase}\`);
+  return <Component {...props} />;
+}`
+        : `
+/**
+ * ${componentName} ${styleConfig.suffix} icon.
+ * @alias ${componentName} from 'react-svg-credit-card-payment-icons/icons/${formatKey}'
+ */
+export function ${componentName}${styleConfig.suffix}Icon(props: SVGProps<SVGSVGElement>): JSX.Element {
+  const Component = formatMappings.${formatKeyCamelCase}.${componentName};
+  if (!Component) throw new Error(\`${componentName} not available in format: ${formatKeyCamelCase}\`);
+  return <Component {...props} />;
+}`;
+      componentEntries.push(styleSpecificComponent);
+      exportNames.push(`${componentName}${styleConfig.suffix}Icon`);
+    }
+
+    // Also generate aliases with Icon suffix
+    const aliases = getAliasesFromYAML(vendor);
+    for (const alias of aliases) {
+      const aliasName = pascalCase(alias);
+      const aliasComponent = `
+/** @alias ${componentName}Icon */
+export function ${aliasName}Icon(props: { format?: ${vendorFormatTypeUnion} } & SVGProps<SVGSVGElement>): JSX.Element {
+  return <${componentName}Icon {...props} />;
+}`;
+      componentEntries.push(aliasComponent);
+      exportNames.push(`${aliasName}Icon`);
+    }
+
+    // Handle variants
+    const variants = getVariantsFromYAML(vendor);
+    for (const variantInfo of variants) {
+      const variantName = pascalCase(variantInfo.alias);
+
+      // Check which formats exist for this variant
+      const variantAvailableFormats: string[] = [];
+      const variantAvailableFormatsCamelCase: string[] = [];
+      for (const style of styles) {
+        const componentPath = path.join(TEMP_DIR, style, `${variantName}.tsx`);
+        if (fs.existsSync(componentPath)) {
+          const camelCase = style.replace(/-(.)/g, (_, c) => c.toUpperCase());
+          variantAvailableFormats.push(style);
+          variantAvailableFormatsCamelCase.push(camelCase);
+        }
+      }
+
+      if (variantAvailableFormats.length === 0) continue;
+
+      const variantFormatTypeUnion = variantAvailableFormatsCamelCase
+        .map((s) => `'${s}'`)
+        .join(' | ');
+      const variantDefaultStyleCamelCase = variantAvailableFormatsCamelCase[0];
+
+      const variantComponent = `
+/**
+ * ${variantName} payment icon with dynamic format selection (variant).
+ *
+ * @param format - Icon style format: ${variantAvailableFormatsCamelCase.map((s) => `'${s}'`).join(', ')}
+ * @param props - Standard SVG element props
+ */
+export function ${variantName}Icon({
+  format = '${variantDefaultStyleCamelCase}',
+  ...props
+}: { format?: ${variantFormatTypeUnion} } & SVGProps<SVGSVGElement>): JSX.Element {
+  const Component = formatMappings[format]?.${variantName};
+  if (!Component) throw new Error(\`${variantName} not available in format: \${format}\`);
+  return <Component {...props} />;
+}`;
+      componentEntries.push(variantComponent);
+      exportNames.push(`${variantName}Icon`);
+
+      // Generate style-specific variant icon components (only for available formats)
+      for (let i = 0; i < variantAvailableFormats.length; i++) {
+        const formatKey = variantAvailableFormats[i];
+        const formatKeyCamelCase = variantAvailableFormatsCamelCase[i];
+        const styleConfig = styleNameMappings[formatKey];
+        if (!styleConfig) continue;
+
+        const styleSpecificVariantComponent = `
+/**
+ * ${variantName} ${styleConfig.suffix} icon (variant).
+ * @alias ${variantName} from 'react-svg-credit-card-payment-icons/icons/${formatKey}'
+ */
+export function ${variantName}${styleConfig.suffix}Icon(props: SVGProps<SVGSVGElement>): JSX.Element {
+  const Component = formatMappings.${formatKeyCamelCase}.${variantName};
+  if (!Component) throw new Error(\`${variantName} not available in format: ${formatKeyCamelCase}\`);
+  return <Component {...props} />;
+}`;
+        componentEntries.push(styleSpecificVariantComponent);
+        exportNames.push(`${variantName}${styleConfig.suffix}Icon`);
+      }
+    }
+  }
+
+  // Generate dynamic imports and mappings
+  const imports = styles
+    .map((style) => {
+      const camelCase = style.replace(/-(.)/g, (_, c) => c.toUpperCase());
+      return `import * as ${camelCase} from './icons/${style}';`;
+    })
+    .join('\n');
+
+  const mappingEntries = styles
+    .map((style) => {
+      const camelCase = style.replace(/-(.)/g, (_, c) => c.toUpperCase());
+      return `  ${camelCase}: ${camelCase},`; // Use camelCase keys, not kebab-case
+    })
+    .join('\n');
+
+  // Build list of available formats in camelCase for export
+  const formatsCamelCase = styles.map((style) => style.replace(/-(.)/g, (_, c) => c.toUpperCase()));
+  const formatsArrayExport = `export const AVAILABLE_FORMATS = [${formatsCamelCase.map((f) => `'${f}'`).join(', ')}] as const;`;
+
+  const unifiedFileContent = `// Auto-generated unified icon components with format selection
+import * as React from 'react';
+import type { SVGProps } from 'react';
+import type { JSX } from 'react';
+${imports}
+
+const formatMappings = {
+${mappingEntries}
+};
+
+${formatsArrayExport}
+
+${componentEntries.join('\n')}
+`;
+
+  const generatedDir = 'generated';
+  const unifiedPath = path.join(generatedDir, 'unifiedIcons.tsx');
+  fs.writeFileSync(unifiedPath, unifiedFileContent);
+  console.log(`\n✅ Generated unified icon components! (${exportNames.length} components)`);
+}
+
+function generateVendorExports(vendors: string[], styles: string[]): void {
+  const vendorDir = path.join(TEMP_DIR, 'vendors');
+  if (!fs.existsSync(vendorDir)) {
+    fs.mkdirSync(vendorDir, { recursive: true });
+  }
+
+  const styleNames = generateStyleNameMappings(styles);
+
+  for (const vendor of vendors) {
+    const cardMetadata = loadCardMetadata(vendor);
+    const componentName = cardMetadata?.type || pascalCase(vendor);
+    const vendorSlug = vendor.toLowerCase();
+
+    // Generate vendor index file with only available style-specific exports
+    const vendorExports: string[] = [];
+    const availableStyles: string[] = [];
+
+    // Check which formats actually exist for this vendor
+    for (const [, styleConfig] of Object.entries(styleNames)) {
+      const componentPath = path.join(TEMP_DIR, styleConfig.dir, `${componentName}.tsx`);
+      if (fs.existsSync(componentPath)) {
+        vendorExports.push(
+          `export { default as ${componentName}${styleConfig.suffix}Icon } from '../${styleConfig.dir}/${componentName}';`
+        );
+        availableStyles.push(styleConfig.dir);
+      }
+    }
+
+    // Only add base exports if at least one style exists
+    if (availableStyles.length > 0) {
+      // Use the first available style as default (prefer flat if available)
+      const defaultStyle = availableStyles.includes('flat') ? 'flat' : availableStyles[0];
+
+      vendorExports.push('');
+      vendorExports.push(
+        `export { default as ${componentName}Icon } from '../${defaultStyle}/${componentName}';`
+      );
+      vendorExports.push(
+        `export { default as ${componentName} } from '../${defaultStyle}/${componentName}';`
+      );
+
+      // Add default export
+      vendorExports.push('');
+      vendorExports.push(`export { default } from '../${defaultStyle}/${componentName}';`);
+
+      const vendorIndexContent = vendorExports.join('\n') + '\n';
+      fs.writeFileSync(path.join(vendorDir, `${vendorSlug}.ts`), vendorIndexContent);
+    }
+  }
+
+  console.log(`\n✅ Generated vendor-specific exports for ${vendors.length} vendors!`);
 }
 
 function generateCardMetadataFile(vendors: string[]): void {
@@ -345,15 +694,17 @@ ${metadataEntries.join(',\n')}
 }
 
 async function main(): Promise<void> {
+  // Discover all available styles from the filesystem
+  const STYLES = discoverStyles();
+  console.log(`\n📦 Discovered ${STYLES.length} styles: ${STYLES.join(', ')}\n`);
+
   const vendors = getVendorDirectories();
-  const componentsByStyle: Record<Style, string[]> = {
-    flat: [],
-    'flat-rounded': [],
-    logo: [],
-    'logo-border': [],
-    mono: [],
-    'mono-outline': [],
-  };
+  const componentsByStyle: Record<string, string[]> = {};
+
+  // Initialize componentsByStyle with discovered styles
+  for (const style of STYLES) {
+    componentsByStyle[style] = [];
+  }
 
   // Build alias map: vendor -> aliases[]
   const aliasMap = new Map<string, string[]>();
@@ -409,6 +760,12 @@ async function main(): Promise<void> {
 
   // Generate lightweight card metadata file
   generateCardMetadataFile(vendors);
+
+  // Generate unified icon components with format selection
+  generateUnifiedIconsFile(vendors, STYLES);
+
+  // Generate vendor-specific exports
+  generateVendorExports(vendors, STYLES);
 
   console.log('\n✅ All components generated with inline styles!');
 }
