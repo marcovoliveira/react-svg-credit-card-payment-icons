@@ -27,6 +27,8 @@ const getAliases = (typeName: string): string[] => {
   if (card) {
     const aliases: string[] = [...card.aliases];
     if (card.legacyType) aliases.unshift(card.legacyType);
+    // Add "Icon" suffix alias
+    aliases.push(`${typeName}Icon`);
     return aliases;
   }
 
@@ -36,7 +38,9 @@ const getAliases = (typeName: string): string[] => {
       const variantEntry = Object.entries(cardData.variants).find(([alias]) => alias === typeName);
       if (variantEntry) {
         const [, variantDef] = variantEntry;
-        const variantAliases = variantDef.aliases || [];
+        const variantAliases = [...(variantDef.aliases || [])];
+        // Add "Icon" suffix alias for variant
+        variantAliases.push(`${typeName}Icon`);
         return variantAliases;
       }
     }

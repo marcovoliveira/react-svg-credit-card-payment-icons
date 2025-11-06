@@ -33,17 +33,19 @@ A simple, flexible React component for displaying payment card icons with multip
 
 ## Quick Example
 \`\`\`tsx
-// Method 1: Universal component
+// Method 1: Universal component (supports format and variant props)
 import { PaymentIcon } from 'react-svg-credit-card-payment-icons';
 <PaymentIcon type="Visa" format="flatRounded" width={100} />
+<PaymentIcon type="Hipercard" variant="hiper" format="flatRounded" width={100} />
 
 // Method 2: Unified icon with format prop
 import { VisaIcon } from 'react-svg-credit-card-payment-icons';
 <VisaIcon format="flatRounded" width={100} />
 
-// Method 3: Format-specific (smallest bundle)
-import { VisaFlatRoundedIcon } from 'react-svg-credit-card-payment-icons';
+// Method 3: Format-specific (smallest bundle, supports variants)
+import { VisaFlatRoundedIcon, HipercardFlatRoundedIcon } from 'react-svg-credit-card-payment-icons';
 <VisaFlatRoundedIcon width={100} />
+<HipercardFlatRoundedIcon variant="Hiper" width={100} />
 
 // Method 4: Vendor-specific imports
 import { VisaFlatRoundedIcon, VisaLogoIcon } from 'react-svg-credit-card-payment-icons/visa';
@@ -97,9 +99,10 @@ import { VisaFlatRoundedIcon, VisaLogoIcon } from 'react-svg-credit-card-payment
       control: { type: 'select' },
       options: ['', 'hiper', 'code', 'code-front'],
       description:
-        '⚠️ Only works with certain types: "hiper" → Hipercard only. "code"/"code-front" → Generic only. See dedicated variant stories for better controls.',
+        'Select a variant for cards that support them. Works with: Hipercard (variant: "hiper"), Generic (variant: "code" or "code-front"). Leave empty for default style.',
       table: {
         type: { summary: 'string' },
+        defaultValue: { summary: 'undefined' },
       },
     },
     width: {
@@ -153,9 +156,66 @@ export const Playground: Story = {
     format: 'flatRounded',
     width: 120,
   },
+  render: (args) => {
+    const { type, variant, ...rest } = args;
+
+    // Validate variant compatibility
+    const isHipercardType = type === 'Hipercard' || type === 'Hiper';
+    const isGenericType = type === 'Generic' || type === 'Code' || type === 'CodeFront';
+    const isHiperVariant = variant === 'hiper';
+    const isCodeVariant = variant === 'code' || variant === 'code-front';
+
+    let effectiveVariant = variant;
+    let warningMessage = '';
+
+    if (isHiperVariant && !isHipercardType) {
+      effectiveVariant = undefined;
+      warningMessage = '⚠️ Variant "hiper" only works with Hipercard type. Using default instead.';
+    } else if (isCodeVariant && !isGenericType) {
+      effectiveVariant = undefined;
+      warningMessage =
+        '⚠️ Variant "code" and "code-front" only work with Generic type. Using default instead.';
+    }
+
+    return (
+      <div>
+        {warningMessage && (
+          <div
+            style={{
+              padding: '12px',
+              marginBottom: '16px',
+              background: '#fff3cd',
+              border: '1px solid #ffc107',
+              borderRadius: '4px',
+              fontSize: '13px',
+              color: '#856404',
+            }}
+          >
+            {warningMessage}
+          </div>
+        )}
+        <PaymentIcon type={type} variant={effectiveVariant} {...rest} />
+      </div>
+    );
+  },
   argTypes: {
     variant: {
-      table: { disable: true }, // Hide variant from main playground
+      control: {
+        type: 'select',
+        labels: {
+          '': 'None (default)',
+          hiper: 'hiper (for Hipercard only)',
+          code: 'code (for Generic only - back CVV)',
+          'code-front': 'code-front (for Generic only - front CVV)',
+        },
+      },
+      options: ['', 'hiper', 'code', 'code-front'],
+      description:
+        'Select a variant. Only works with specific card types: "hiper" → Hipercard, "code"/"code-front" → Generic. Invalid combinations show a warning.',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: 'undefined' },
+      },
     },
   },
 };
@@ -371,6 +431,88 @@ export const ResponsiveSizing: Story = {
   },
 };
 
+export const PaymentIconWithVariants: Story = {
+  args: {
+    type: 'Hipercard',
+    format: 'flatRounded',
+    width: 120,
+  },
+  render: () => (
+    <div>
+      <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '16px' }}>
+        PaymentIcon Component with Variant Support
+      </h3>
+      <p style={{ fontSize: '12px', marginBottom: '24px', maxWidth: '600px' }}>
+        The universal <code>PaymentIcon</code> component supports the <code>variant</code> prop for
+        cards with multiple visual styles:
+      </p>
+
+      <div style={{ marginBottom: '32px' }}>
+        <h4 style={{ fontSize: '13px', fontWeight: '600', marginBottom: '12px' }}>
+          Hipercard Variants
+        </h4>
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '12px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <PaymentIcon type="Hipercard" format="flatRounded" width={100} />
+            <div style={{ fontSize: '11px', marginTop: '6px' }}>Default</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <PaymentIcon type="Hipercard" variant="hiper" format="flatRounded" width={100} />
+            <div style={{ fontSize: '11px', marginTop: '6px' }}>variant=&quot;hiper&quot;</div>
+          </div>
+        </div>
+        <pre
+          style={{ fontSize: '11px', background: '#f5f5f5', padding: '12px', borderRadius: '4px' }}
+        >
+          {`<PaymentIcon type="Hipercard" format="flatRounded" />
+<PaymentIcon type="Hipercard" variant="hiper" format="flatRounded" />`}
+        </pre>
+      </div>
+
+      <div style={{ marginBottom: '32px' }}>
+        <h4 style={{ fontSize: '13px', fontWeight: '600', marginBottom: '12px' }}>
+          Generic Card Variants
+        </h4>
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '12px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <PaymentIcon type="Generic" format="flatRounded" width={100} />
+            <div style={{ fontSize: '11px', marginTop: '6px' }}>Default (front)</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <PaymentIcon type="Generic" variant="code" format="flatRounded" width={100} />
+            <div style={{ fontSize: '11px', marginTop: '6px' }}>variant=&quot;code&quot;</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <PaymentIcon type="Generic" variant="code-front" format="flatRounded" width={100} />
+            <div style={{ fontSize: '11px', marginTop: '6px' }}>variant=&quot;code-front&quot;</div>
+          </div>
+        </div>
+        <pre
+          style={{ fontSize: '11px', background: '#f5f5f5', padding: '12px', borderRadius: '4px' }}
+        >
+          {`<PaymentIcon type="Generic" format="flatRounded" />
+<PaymentIcon type="Generic" variant="code" format="flatRounded" />
+<PaymentIcon type="Generic" variant="code-front" format="flatRounded" />`}
+        </pre>
+      </div>
+
+      <div style={{ fontSize: '12px', color: '#666', marginTop: '16px' }}>
+        💡 Tip: You can also use variant aliases directly as the type:{' '}
+        <code>&lt;PaymentIcon type=&quot;Hiper&quot; /&gt;</code> or{' '}
+        <code>&lt;PaymentIcon type=&quot;Code&quot; /&gt;</code>
+      </div>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The PaymentIcon component accepts a variant prop to select between different visual styles of the same card network. This is useful for cards like Hipercard/Hiper or Generic card with CVV variations.',
+      },
+    },
+  },
+};
+
 export const NewImportMethods: Story = {
   args: {
     type: 'Visa',
@@ -382,9 +524,10 @@ export const NewImportMethods: Story = {
         <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px' }}>
           Method 1: PaymentIcon Component (Universal)
         </h3>
-        <div style={{ display: 'flex', gap: '20px', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '8px', flexWrap: 'wrap' }}>
           <PaymentIcon type="Visa" format="flatRounded" width={100} />
           <PaymentIcon type="Mastercard" format="logo" width={100} />
+          <PaymentIcon type="Hipercard" variant="hiper" format="flatRounded" width={100} />
         </div>
         <pre
           style={{ fontSize: '11px', background: '#f5f5f5', padding: '12px', borderRadius: '4px' }}
@@ -392,8 +535,12 @@ export const NewImportMethods: Story = {
           {`import { PaymentIcon } from 'react-svg-credit-card-payment-icons';
 
 <PaymentIcon type="Visa" format="flatRounded" width={100} />
-<PaymentIcon type="Mastercard" format="logo" width={100} />`}
+<PaymentIcon type="Mastercard" format="logo" width={100} />
+<PaymentIcon type="Hipercard" variant="hiper" format="flatRounded" width={100} />`}
         </pre>
+        <div style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+          ✨ Supports format and variant props for complete flexibility
+        </div>
       </div>
 
       <div style={{ marginBottom: '32px' }}>
