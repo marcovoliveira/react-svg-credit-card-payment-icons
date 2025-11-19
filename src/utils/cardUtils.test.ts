@@ -1,5 +1,6 @@
 import {
   detectCardType,
+  getCardType,
   validateCardNumber,
   formatCardNumber,
   sanitizeCardNumber,
@@ -8,63 +9,66 @@ import {
   getCardLengthRange,
   isCardNumberPotentiallyValid,
 } from './cardUtils';
+import { CARD_METADATA, type CardMetadata } from '../../generated/cardMetadata';
 
 describe('cardUtils', () => {
-  describe('detectCardType', () => {
-    it('detects Visa cards', () => {
-      expect(detectCardType('4111111111111111')).toBe('Visa');
-      expect(detectCardType('4')).toBe('Generic'); // Too short
-    });
-
-    it('detects Mastercard', () => {
-      expect(detectCardType('5500000000000004')).toBe('Mastercard');
-      expect(detectCardType('5111')).toBe('Mastercard');
-    });
-
-    it('detects American Express', () => {
-      expect(detectCardType('340000000000009')).toBe('Americanexpress');
-      expect(detectCardType('370000000000002')).toBe('Americanexpress');
-    });
-
-    it('detects Discover', () => {
-      expect(detectCardType('6011000000000004')).toBe('Discover');
-    });
-
-    it('detects Diners Club', () => {
-      expect(detectCardType('30000000000000')).toBe('Diners');
-      expect(detectCardType('36000000000000')).toBe('Diners');
-    });
-
-    it('detects JCB', () => {
-      expect(detectCardType('3530111333300000')).toBe('Jcb');
-    });
-
-    it('detects UnionPay', () => {
-      expect(detectCardType('6200000000000005')).toBe('Unionpay');
-    });
-
-    it('detects Maestro', () => {
-      expect(detectCardType('6304000000000000')).toBe('Maestro');
-    });
-
-    it('detects Elo', () => {
-      expect(detectCardType('5066991111111118')).toBe('Elo');
-    });
-
-    it('detects Hiper/Hipercard', () => {
-      // Both have the same pattern, so either detection is fine
-      const result = detectCardType('6062828888666688');
-      expect(result === 'Hiper' || result === 'Hipercard').toBe(true);
-    });
-
-    it('detects Mir', () => {
-      expect(detectCardType('2200000000000000')).toBe('Mir');
+  describe('getCardType', () => {
+    it('returns Generic for too short input', () => {
+      expect(getCardType('4')).toBe('Generic');
+      expect(getCardType('12')).toBe('Generic');
+      expect(getCardType('123')).toBe('Generic');
     });
 
     it('returns Generic for unknown patterns', () => {
-      expect(detectCardType('9999')).toBe('Generic');
+      expect(getCardType('9999999999999999')).toBe('Generic');
+      expect(getCardType('')).toBe('Generic');
+    });
+
+    it('handles partial card numbers (prefix detection)', () => {
+      expect(getCardType('4111')).toBe('Visa'); // Partial Visa
+      expect(getCardType('5111')).toBe('Mastercard'); // Partial Mastercard
+    });
+
+    it('returns canonical type, not variant alias', () => {
+      // Hipercard test numbers should return 'Hipercard', not 'Hiper'
+      expect(getCardType('6062825624254001')).toBe('Hipercard');
+      expect(getCardType('6062828888666688')).toBe('Hipercard');
+    });
+
+    it('returns canonical type names', () => {
+      // Should return canonical names
+      expect(getCardType('378282246310005')).toBe('AmericanExpress');
+      expect(getCardType('30569309025904')).toBe('DinersClub');
+      expect(getCardType('6200000000000005')).toBe('UnionPay');
+      expect(getCardType('3566002020360505')).toBe('JCB');
+    });
+
+    it('returns canonical types for all cards', () => {
+      expect(getCardType('4242424242424242')).toBe('Visa');
+      expect(getCardType('5555555555554444')).toBe('Mastercard');
+      expect(getCardType('6011111111111117')).toBe('Discover');
+    });
+  });
+
+  describe('detectCardType (deprecated)', () => {
+    it('returns legacy type names for backward compatibility', () => {
+      // Legacy function returns v4.x type names
+      expect(detectCardType('378282246310005')).toBe('Americanexpress');
+      expect(detectCardType('30569309025904')).toBe('Diners');
+      expect(detectCardType('6200000000000005')).toBe('Unionpay');
+      expect(detectCardType('3566002020360505')).toBe('Jcb');
+    });
+
+    it('returns canonical names for cards without legacy types', () => {
+      // Cards without legacyType return canonical type
+      expect(detectCardType('4242424242424242')).toBe('Visa');
+      expect(detectCardType('5555555555554444')).toBe('Mastercard');
+      expect(detectCardType('6011111111111117')).toBe('Discover');
+    });
+
+    it('returns Generic for unknown patterns', () => {
+      expect(detectCardType('9999999999999999')).toBe('Generic');
       expect(detectCardType('')).toBe('Generic');
-      expect(detectCardType('123')).toBe('Generic'); // Too short
     });
   });
 
@@ -158,75 +162,51 @@ describe('cardUtils', () => {
   });
 
   describe('validateCardForType', () => {
-    it('validates correct card for specific type', () => {
-      expect(validateCardForType('4111111111111111', 'Visa')).toBe(true);
-      expect(validateCardForType('5500000000000004', 'Mastercard')).toBe(true);
+    // Dynamically test validation for each card type with test numbers
+    CARD_METADATA.forEach((card: CardMetadata) => {
+      if (card.testNumbers && card.testNumbers.length > 0) {
+        it(`validates ${card.type} test numbers`, () => {
+          card.testNumbers.forEach((testNumber: string) => {
+            expect(validateCardForType(testNumber, card.type)).toBe(true);
+          });
+        });
+
+        it(`rejects ${card.type} test numbers for wrong type`, () => {
+          // Pick a different card type to test rejection
+          const differentCard = CARD_METADATA.find(
+            (c: CardMetadata) => c.type !== card.type && c.testNumbers?.length > 0
+          );
+          if (differentCard) {
+            card.testNumbers.forEach((testNumber: string) => {
+              expect(validateCardForType(testNumber, differentCard.type)).toBe(false);
+            });
+          }
+        });
+      }
     });
 
-    it('rejects incorrect card for specific type', () => {
-      expect(validateCardForType('4111111111111111', 'Mastercard')).toBe(false);
-      expect(validateCardForType('5500000000000004', 'Visa')).toBe(false);
+    it('rejects invalid Luhn checksums', () => {
+      expect(validateCardForType('4111111111111112', 'Visa')).toBe(false);
     });
 
     it('rejects non-card payment methods', () => {
       expect(validateCardForType('1234567890123456', 'Paypal')).toBe(false);
       expect(validateCardForType('1234567890123456', 'Alipay')).toBe(false);
     });
-
-    it('validates invalid card numbers as false', () => {
-      expect(validateCardForType('4111111111111112', 'Visa')).toBe(false);
-    });
   });
 
   describe('getCardLengthRange', () => {
-    it('returns correct length range for Visa', () => {
-      expect(getCardLengthRange('Visa')).toEqual({ min: 13, max: 19 });
-    });
-
-    it('returns correct length range for Mastercard', () => {
-      expect(getCardLengthRange('Mastercard')).toEqual({ min: 16, max: 16 });
-    });
-
-    it('returns correct length range for American Express', () => {
-      expect(getCardLengthRange('Americanexpress')).toEqual({ min: 15, max: 15 });
-    });
-
-    it('returns correct length range for Diners', () => {
-      expect(getCardLengthRange('Diners')).toEqual({ min: 14, max: 14 });
-    });
-
-    it('returns correct length range for Discover', () => {
-      expect(getCardLengthRange('Discover')).toEqual({ min: 16, max: 16 });
-    });
-
-    it('returns correct length range for JCB', () => {
-      expect(getCardLengthRange('Jcb')).toEqual({ min: 15, max: 16 });
-    });
-
-    it('returns correct length range for UnionPay', () => {
-      expect(getCardLengthRange('Unionpay')).toEqual({ min: 16, max: 19 });
-    });
-
-    it('returns correct length range for Maestro', () => {
-      expect(getCardLengthRange('Maestro')).toEqual({ min: 12, max: 19 });
-    });
-
-    it('returns correct length range for Elo', () => {
-      expect(getCardLengthRange('Elo')).toEqual({ min: 16, max: 16 });
-    });
-
-    it('returns correct length range for Hiper and Hipercard', () => {
-      expect(getCardLengthRange('Hiper')).toEqual({ min: 16, max: 16 });
-      expect(getCardLengthRange('Hipercard')).toEqual({ min: 16, max: 16 });
-    });
-
-    it('returns correct length range for Mir', () => {
-      expect(getCardLengthRange('Mir')).toEqual({ min: 16, max: 16 });
-    });
-
-    it('returns null for non-card payment methods', () => {
-      expect(getCardLengthRange('Paypal')).toBeNull();
-      expect(getCardLengthRange('Generic')).toBeNull();
+    // Dynamically test length ranges from YAML
+    CARD_METADATA.forEach((card: CardMetadata) => {
+      if (card.lengthRange !== null) {
+        it(`returns correct length range for ${card.type}`, () => {
+          expect(getCardLengthRange(card.type)).toEqual(card.lengthRange);
+        });
+      } else {
+        it(`returns null for ${card.type} (non-card payment method)`, () => {
+          expect(getCardLengthRange(card.type)).toBeNull();
+        });
+      }
     });
   });
 
@@ -247,6 +227,62 @@ describe('cardUtils', () => {
 
     it('handles payment methods without length ranges', () => {
       expect(isCardNumberPotentiallyValid('1234567890123456')).toBe(false);
+    });
+  });
+
+  describe('YAML Card Definition Validation', () => {
+    // Test each card type's test numbers from YAML
+    CARD_METADATA.forEach((card: CardMetadata) => {
+      if (card.testNumbers && card.testNumbers.length > 0) {
+        it(`detects ${card.type} test numbers from YAML`, () => {
+          card.testNumbers.forEach((testNumber: string) => {
+            const detected = getCardType(testNumber);
+            expect(detected).toBe(card.type);
+          });
+        });
+      }
+    });
+
+    // Verify all cards with patterns have test numbers
+    CARD_METADATA.forEach((card: CardMetadata) => {
+      if (card.patterns.full && card.patterns.full.length > 0) {
+        it(`${card.type} has test numbers in YAML`, () => {
+          expect(card.testNumbers).toBeDefined();
+          expect(card.testNumbers.length).toBeGreaterThan(0);
+        });
+      }
+    });
+  });
+
+  describe('Edge cases and special patterns', () => {
+    it('correctly distinguishes Elo from Mastercard', () => {
+      // Elo has specific ranges that overlap with Mastercard's 5xxx range
+      // Pattern should be specific enough to detect Elo correctly
+      expect(getCardType('5066991111111118')).toBe('Elo');
+    });
+
+    it('handles partial card numbers correctly', () => {
+      expect(getCardType('4')).toBe('Generic'); // Too short
+      expect(getCardType('41')).toBe('Generic'); // Too short
+      expect(getCardType('411')).toBe('Generic'); // Too short
+      expect(getCardType('4111')).toBe('Visa'); // Partial Visa
+    });
+
+    it('handles formatted card numbers', () => {
+      expect(getCardType('4111 1111 1111 1111')).toBe('Visa');
+      expect(getCardType('3782-8224-6310-005')).toBe('AmericanExpress');
+      expect(getCardType('5555.5555.5555.4444')).toBe('Mastercard');
+    });
+
+    it('validates length ranges match card type requirements', () => {
+      // American Express should be exactly 15 digits
+      expect(isCardNumberPotentiallyValid('378282246310005')).toBe(true);
+      expect(isCardNumberPotentiallyValid('37828224631000')).toBe(false); // Too short
+      expect(isCardNumberPotentiallyValid('3782822463100055')).toBe(false); // Too long
+
+      // Visa can be 13-19 digits
+      expect(isCardNumberPotentiallyValid('4111111111111')).toBe(true); // 13 digits
+      expect(isCardNumberPotentiallyValid('4111111111111111')).toBe(true); // 16 digits
     });
   });
 });

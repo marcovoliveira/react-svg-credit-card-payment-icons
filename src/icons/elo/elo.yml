@@ -1,0 +1,17 @@
+# Card validation definition for Elo
+# Must be checked before Maestro due to overlapping BIN ranges (both start with 50)
+type: Elo
+displayName: Elo
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers:
+  - '5066991111111118' # Elo test (Adyen)
+patterns:
+  full: '^(?:4011(78|79)|43(1274|8935)|45(1416|7393|763(1|2))|50(4175|6699|67[0-6][0-9]|677[0-8]|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9])|627780|63(6297|6368|6369))[0-9]*$'
+  prefix: '^(4011(78|79)|43(1274|8935)|45(1416|7393|763[12])|50(4175|6699|67[0-6]|677[0-8])|627780|636(297|368|369))'
+lengthRange:
+  min: 16
+  max: 16
+formatPattern: [4, 4, 4, 4] # Standard format: 1234 5678 9012 3456
+issuingCountries: [BR] # Brazil

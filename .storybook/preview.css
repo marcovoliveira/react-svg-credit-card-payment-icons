@@ -1,0 +1,27 @@
+/* Customize code block styling in Storybook docs */
+.sbdocs.sbdocs-content pre,
+.sbdocs.sbdocs-content code {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Target specifically the Source block code examples */
+.docblock-source pre,
+.docblock-source code {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Ensure code blocks are readable and don't overflow */
+.sbdocs.sbdocs-content pre,
+.docblock-source pre {
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 1rem;
+}
+
+/* Improve inline code readability */
+.sbdocs.sbdocs-content code:not(pre code) {
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+}

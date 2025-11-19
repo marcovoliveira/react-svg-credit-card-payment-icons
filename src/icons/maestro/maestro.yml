@@ -1,0 +1,18 @@
+# Card validation definition for Maestro
+# Should be checked after Elo due to overlapping BIN ranges
+type: Maestro
+displayName: Maestro
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers:
+  - '6771798021000008' # Maestro test (Adyen)
+  - '6771798021000016' # Maestro test (Adyen)
+patterns:
+  full: '^(?:5[0678][0-9]{2}|6304|6390|67[0-9]{2})[0-9]{8,15}$'
+  prefix: '^(5[0678]|6304|6390|67)'
+lengthRange:
+  min: 12
+  max: 19
+formatPattern: [4, 4, 4, 4] # Standard format: 1234 5678 9012 3456
+issuingCountries: [GLOBAL] # Globally issued in multiple countries

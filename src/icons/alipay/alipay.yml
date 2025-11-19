@@ -1,0 +1,13 @@
+# Alipay doesn't have card numbers
+type: Alipay
+displayName: Alipay
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers: []
+patterns:
+  full: null
+  prefix: null
+lengthRange: null
+formatPattern: null # Not a physical card
+issuingCountries: [GLOBAL] # Available in 80+ countries worldwide

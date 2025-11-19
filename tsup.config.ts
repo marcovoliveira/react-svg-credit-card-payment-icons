@@ -3,15 +3,60 @@ import fs from 'fs';
 import { transform } from '@svgr/core';
 import path from 'path';
 
+// Dynamically generate format entries (flat, logo, mono, etc.)
+function getFormatEntries() {
+  const iconsDir = 'generated/icons';
+  if (!fs.existsSync(iconsDir)) {
+    return {};
+  }
+
+  const entries: Record<string, string> = {};
+  const items = fs.readdirSync(iconsDir);
+
+  for (const item of items) {
+    const itemPath = path.join(iconsDir, item);
+    const stat = fs.statSync(itemPath);
+
+    // Skip non-directories and the 'vendors' directory
+    if (!stat.isDirectory() || item === 'vendors') {
+      continue;
+    }
+
+    // Check if index.ts exists in this directory
+    const indexPath = path.join(itemPath, 'index.ts');
+    if (fs.existsSync(indexPath)) {
+      entries[`icons/${item}`] = `generated/icons/${item}/index.ts`;
+    }
+  }
+
+  return entries;
+}
+
+// Dynamically generate vendor entries
+function getVendorEntries() {
+  const vendorsDir = 'generated/icons/vendors';
+  if (!fs.existsSync(vendorsDir)) {
+    return {};
+  }
+
+  const vendorFiles = fs.readdirSync(vendorsDir).filter(file => file.endsWith('.ts'));
+  const entries: Record<string, string> = {};
+
+  for (const file of vendorFiles) {
+    const vendorName = file.replace('.ts', '');
+    entries[vendorName] = `${vendorsDir}/${file}`;
+  }
+
+  return entries;
+}
+
 export default defineConfig({
   entry: {
     index: 'src/index.tsx',
-    'icons/flat': 'generated/icons/flat/index.ts',
-    'icons/flat-rounded': 'generated/icons/flat-rounded/index.ts',
-    'icons/logo': 'generated/icons/logo/index.ts',
-    'icons/logo-border': 'generated/icons/logo-border/index.ts',
-    'icons/mono': 'generated/icons/mono/index.ts',
-    'icons/mono-outline': 'generated/icons/mono-outline/index.ts',
+    // Dynamically add all icon format exports (flat, logo, mono, etc.)
+    ...getFormatEntries(),
+    // Dynamically add vendor-specific exports (visa, mastercard, etc.)
+    ...getVendorEntries(),
   },
   format: ['cjs', 'esm'],
   dts: true,
@@ -24,8 +69,10 @@ export default defineConfig({
       setup(build) {
         // Resolve .svg?react imports
         build.onResolve({ filter: /\.svg\?react$/ }, (args) => {
+          // Robust URL parsing to handle query parameters
+          const [filePath] = args.path.split('?');
           return {
-            path: path.resolve(args.resolveDir, args.path.replace('?react', '')),
+            path: path.resolve(args.resolveDir, filePath),
             namespace: 'svgr',
           };
         });
@@ -37,7 +84,7 @@ export default defineConfig({
           const componentCode = await transform(
             svg,
             {
-              typescript: false,
+              typescript: true,
               plugins: ['@svgr/plugin-jsx'],
               jsx: {
                 babelConfig: {
@@ -53,7 +100,7 @@ export default defineConfig({
 
           return {
             contents: componentCode,
-            loader: 'jsx',
+            loader: 'tsx',
           };
         });
       },

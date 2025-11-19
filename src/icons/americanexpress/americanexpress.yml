@@ -1,0 +1,19 @@
+# Card validation definition for American Express
+type: AmericanExpress
+legacyType: Americanexpress # Auto-added as alias
+displayName: American Express
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases:
+  - Amex
+testNumbers:
+  - '378282246310005' # Standard (Stripe)
+  - '371449635398431' # Alternative (Stripe)
+patterns:
+  full: '^3[47][0-9]{13}$'
+  prefix: '^3[47]'
+lengthRange:
+  min: 15
+  max: 15
+formatPattern: [4, 6, 5] # Amex format: 3782 822463 10005
+issuingCountries: [US] # Primarily issued in United States

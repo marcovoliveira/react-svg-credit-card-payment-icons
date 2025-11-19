@@ -1,12 +1,34 @@
 import React, { useState } from 'react';
 import { PaymentIcon, type PaymentType } from '../index';
 import {
-  detectCardType,
+  getCardType,
   validateCardNumber,
   formatCardNumber,
   maskCardNumber,
   isCardNumberPotentiallyValid,
 } from '../utils/cardUtils';
+import { CARD_METADATA } from '../../generated/cardMetadata';
+
+// Helper to get display name for a card type
+function getDisplayName(type: PaymentType): string {
+  const card = CARD_METADATA.find((c) => c.type === type || c.legacyType === type);
+  return card?.displayName || type;
+}
+
+// Helper to get issuing countries for a card type
+function getIssuingCountries(type: PaymentType): string[] | null {
+  const card = CARD_METADATA.find((c) => c.type === type || c.legacyType === type);
+  return card?.issuingCountries || null;
+}
+
+// Format countries for display
+function formatCountries(countries: string[] | null): string {
+  if (!countries) return 'N/A';
+  if (countries.includes('GLOBAL')) return '🌍 Global';
+  if (countries.length > 3)
+    return `${countries.slice(0, 3).join(', ')} +${countries.length - 3} more`;
+  return countries.join(', ');
+}
 
 export default function CardUtilsDemo() {
   const [cardNumber, setCardNumber] = useState('');
@@ -17,7 +39,7 @@ export default function CardUtilsDemo() {
   const handleCardNumberChange = (value: string) => {
     setCardNumber(value);
 
-    const detected = detectCardType(value);
+    const detected = getCardType(value);
     setDetectedType(detected);
 
     setIsValid(validateCardNumber(value));
@@ -25,12 +47,16 @@ export default function CardUtilsDemo() {
   };
 
   const testCards = [
-    { type: 'Visa', number: '4242424242424242' },
-    { type: 'Mastercard', number: '5555555555554444' },
-    { type: 'Americanexpress', number: '378282246310005' },
-    { type: 'Discover', number: '6011111111111117' },
-    { type: 'Diners', number: '30569309025904' },
-    { type: 'JCB', number: '3530111333300000' },
+    { displayName: 'Visa', number: '4242424242424242' },
+    { displayName: 'Mastercard', number: '5555555555554444' },
+    { displayName: 'American Express', number: '378282246310005' },
+    { displayName: 'JCB', number: '3530111333300000' },
+    { displayName: 'UnionPay', number: '6200000000000005' },
+    { displayName: 'Elo', number: '6362970000457013' },
+    { displayName: 'Mir', number: '2200000000000000' },
+    { displayName: 'Hipercard', number: '6062825624254001' },
+    { displayName: 'Discover', number: '6011111111111117' },
+    { displayName: 'Diners Club', number: '30569309025904' },
   ];
 
   return (
@@ -65,7 +91,10 @@ export default function CardUtilsDemo() {
           >
             <strong>Detected Type:</strong>
             <PaymentIcon type={detectedType} format="flatRounded" width={30} />
-            <span>{detectedType}</span>
+            <span>{getDisplayName(detectedType)}</span>
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <strong>Issuing Countries:</strong> {formatCountries(getIssuingCountries(detectedType))}
           </div>
 
           <div>
@@ -116,10 +145,10 @@ export default function CardUtilsDemo() {
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#f9f9f9')}
             >
-              <PaymentIcon type={detectCardType(card.number)} format="flatRounded" width={40} />
+              <PaymentIcon type={getCardType(card.number)} format="flatRounded" width={40} />
               <div>
                 <div>
-                  <strong>{card.type}</strong>
+                  <strong>{card.displayName}</strong>
                 </div>
                 <div style={{ fontSize: '12px', color: '#666' }}>
                   {formatCardNumber(card.number)}
@@ -143,8 +172,8 @@ export default function CardUtilsDemo() {
           <h3>Functions:</h3>
           <ul>
             <li>
-              <code>detectCardType(cardNumber: string): PaymentType</code> - Detects card type from
-              number
+              <code>detectCardType(cardNumber: string, useLegacy?: boolean): PaymentType</code> -
+              Detects card type from number. Set <code>useLegacy=true</code> for v4 type names.
             </li>
             <li>
               <code>validateCardNumber(cardNumber: string): boolean</code> - Validates using Luhn

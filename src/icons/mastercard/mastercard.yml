@@ -1,0 +1,21 @@
+# Card validation definition for Mastercard
+type: Mastercard
+displayName: Mastercard
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers:
+  - '5555555555554444' # Standard (Stripe)
+  - '2223003122003222' # 2-series (Stripe)
+  - '5200828282828210' # Debit (Stripe)
+  - '5105105105105100' # Prepaid (Stripe)
+patterns:
+  full:
+    - '^5[1-5][0-9]{14}$'
+    - '^2(?:2(?:2[1-9]|[3-9][0-9])|[3-6][0-9][0-9]|7(?:[01][0-9]|20))[0-9]{12}$'
+  prefix: '^(5[1-5]|2(22[1-9]|2[3-9]|[3-6]|7[01]|720))'
+lengthRange:
+  min: 16
+  max: 16
+formatPattern: [4, 4, 4, 4] # Standard format: 1234 5678 9012 3456
+issuingCountries: [GLOBAL] # Issued globally in 200+ countries

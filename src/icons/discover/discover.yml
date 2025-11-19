@@ -1,0 +1,18 @@
+# Card validation definition for Discover
+type: Discover
+displayName: Discover
+iconAuthor: Aaron Fagan
+iconLicense: Apache-2.0
+aliases: []
+testNumbers:
+  - '6011111111111117' # Standard (Stripe)
+  - '6011000990139424' # Alternative (Stripe)
+  - '6011981111111113' # Debit (Stripe)
+patterns:
+  full: '^6(?:011|5[0-9]{2})[0-9]{12}$'
+  prefix: '^6(011|5[0-9]{2}|[45])'
+lengthRange:
+  min: 16
+  max: 16
+formatPattern: [4, 4, 4, 4] # Standard format: 1234 5678 9012 3456
+issuingCountries: [US] # Primarily issued in United States
