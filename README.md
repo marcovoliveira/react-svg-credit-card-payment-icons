@@ -13,7 +13,7 @@ SVG Credit Card & Payment Icons: 6 Styles, 80 Icons for React ⚛️
 A collection of SVG based credit card logo icons.
 React component with Typescript support.
 
-## [Live Demo](https://marcovoliveira.github.io/react-svg-credit-card-payment-icons/?path=/docs/payment-cards--docs)
+## [Live Demo](https://marcovoliveira.github.io/react-svg-credit-card-payment-icons/?path=/docs/1-getting-started-quick-start--docs)
 
 ## 💿 Installation
 
