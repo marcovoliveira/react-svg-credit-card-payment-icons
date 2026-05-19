@@ -1,7 +1,7 @@
 {
   "name": "react-svg-credit-card-payment-icons",
   "license": "MIT",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "description": "React components library with 6 styles, 108 icons, TypeScript support, and a variety of types and formats for easy integration into React applications.",
   "repository": {
     "type": "git",
@@ -19,9 +19,16 @@
         "import": "./dist/native/index.mjs",
         "require": "./dist/native/index.js"
       },
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "browser": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
+      },
+      "default": {
+        "types": "./dist/native/index.d.ts",
+        "import": "./dist/native/index.mjs",
+        "require": "./dist/native/index.js"
+      }
     },
     "./native": {
       "types": "./dist/native/index.d.ts",
@@ -39,14 +46,28 @@
         "import": "./dist/native/icons/*.mjs",
         "require": "./dist/native/icons/*.js"
       },
-      "types": "./dist/icons/*.d.ts",
-      "import": "./dist/icons/*.mjs",
-      "require": "./dist/icons/*.js"
+      "browser": {
+        "types": "./dist/icons/*.d.ts",
+        "import": "./dist/icons/*.mjs",
+        "require": "./dist/icons/*.js"
+      },
+      "default": {
+        "types": "./dist/native/icons/*.d.ts",
+        "import": "./dist/native/icons/*.mjs",
+        "require": "./dist/native/icons/*.js"
+      }
     },
     "./*": {
-      "types": "./dist/*.d.ts",
-      "import": "./dist/*.mjs",
-      "require": "./dist/*.js"
+      "browser": {
+        "types": "./dist/*.d.ts",
+        "import": "./dist/*.mjs",
+        "require": "./dist/*.js"
+      },
+      "default": {
+        "types": "./dist/*.d.ts",
+        "import": "./dist/*.mjs",
+        "require": "./dist/*.js"
+      }
     }
   },
   "files": [
