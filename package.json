@@ -1,7 +1,7 @@
 {
   "name": "react-svg-credit-card-payment-icons",
   "license": "MIT",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "React components library with 6 styles, 108 icons, TypeScript support, and a variety of types and formats for easy integration into React applications.",
   "repository": {
     "type": "git",
@@ -67,7 +67,7 @@
     "test:coverage": "jest --coverage",
     "test:storybook": "vitest --project=storybook",
     "prebuild": "pnpm run generate",
-    "build": "tsup",
+    "build": "tsup && node -e \"const fs=require('fs'); fs.writeFileSync('dist/index.native.js', \\\"'use strict';\\\\nmodule.exports = require('./native/index.js');\\\\n\\\"); fs.writeFileSync('dist/index.native.mjs', \\\"export * from './native/index.mjs';\\\\nexport { default } from './native/index.mjs';\\\\n\\\");\"",
     "prestorybook": "pnpm run generate",
     "storybook": "storybook dev -p 6006",
     "prebuild-storybook": "pnpm run generate",
