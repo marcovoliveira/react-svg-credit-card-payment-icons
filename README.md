@@ -3,21 +3,23 @@
 [![npm](https://img.shields.io/npm/v/react-svg-credit-card-payment-icons)](https://www.npmjs.com/package/react-svg-credit-card-payment-icons)
 [![TypeScript](https://badgen.net/npm/types/env-var)](http://www.typescriptlang.org/)
 [![​npm​](https://img.shields.io/npm/dm/react-svg-credit-card-payment-icons)](https://www.npmjs.com/package/react-svg-credit-card-payment-icons)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons)
+[![React Native](https://img.shields.io/badge/React%20Native-supported-blue?logo=react)](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![GitHub stars](https://img.shields.io/github/stars/marcovoliveira/react-svg-credit-card-payment-icons.svg?style=social)](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons)
 [![Contribute](https://img.shields.io/badge/-Contribute%20with%20a%20%E2%98%85!-%23ffd700)](https://github.com/marcovoliveira/react-svg-credit-card-payment-icons)
 [![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/marcovoliveira)
 
-SVG Credit Card & Payment Icons: 6 Styles, 80 Icons for React ⚛️
+SVG Credit Card & Payment Icons: 6 Styles, 80 Icons for React & React Native ⚛️
 
 A collection of SVG based credit card logo icons.
-React component with Typescript support.
+Cross-platform React components with TypeScript support — works in both React (web) and React Native.
 
 ## [Live Demo](https://marcovoliveira.github.io/react-svg-credit-card-payment-icons/?path=/docs/1-getting-started-quick-start--docs)
 
 ## 💿 Installation
 
-1. Install this package:
+### React (Web)
 
 ```bash
 npm install react-svg-credit-card-payment-icons
@@ -34,6 +36,28 @@ or
 ```bash
 pnpm add react-svg-credit-card-payment-icons
 ```
+
+### React Native
+
+Install the package along with `react-native-svg`:
+
+```bash
+npm install react-svg-credit-card-payment-icons react-native-svg
+```
+
+or
+
+```bash
+yarn add react-svg-credit-card-payment-icons react-native-svg
+```
+
+or
+
+```bash
+pnpm add react-svg-credit-card-payment-icons react-native-svg
+```
+
+> **Note:** For Expo projects, use `npx expo install react-native-svg` to ensure compatibility.
 
 ## 📦 Usage
 
@@ -136,6 +160,40 @@ Available import paths:
 - `react-svg-credit-card-payment-icons/icons/logo-border`
 - `react-svg-credit-card-payment-icons/icons/mono`
 - `react-svg-credit-card-payment-icons/icons/mono-outline`
+
+### React Native Usage
+
+The package is cross-platform. React Native bundlers (Metro) automatically resolve the native entry via the `"react-native"` export condition — **you use the same imports as web**:
+
+```tsx
+import { PaymentIcon } from 'react-svg-credit-card-payment-icons';
+
+const App = () => {
+  return <PaymentIcon type="Visa" format="flatRounded" width={100} />;
+};
+```
+
+All options (unified icons, format-specific, vendor imports) work identically:
+
+```tsx
+// Unified icons
+import { VisaIcon } from 'react-svg-credit-card-payment-icons';
+
+// Format-specific path imports
+import { Visa } from 'react-svg-credit-card-payment-icons/icons/flat-rounded';
+```
+
+You can also use the explicit `/native` imports if needed:
+
+```tsx
+// Explicit native entry
+import { PaymentIcon } from 'react-svg-credit-card-payment-icons/native';
+
+// Explicit native format-specific imports
+import { Visa } from 'react-svg-credit-card-payment-icons/native/icons/flat';
+```
+
+> **Requirements:** `react-native-svg` must be installed in your project. The native components use `<Svg>`, `<Path>`, `<G>`, etc. from `react-native-svg` instead of DOM `<svg>` elements.
 
 ### Card Variants and Aliases
 
@@ -341,9 +399,11 @@ If the format is not specified, the default setting is flat.
 
 - Specify either width or height; there's no requirement to define both. The aspect ratio is preset at 780:500 for SVGs. If neither width nor height is defined, width will default to 40.
 
-- The component also allows all the properties (props) of the Svg component, including attributes like style.
+- The component also allows all the properties (props) of the SVG component, including attributes like style (web) or `SvgProps` (React Native).
 
 - If an invalid type is provided, the default setting is generic.
+
+- On React Native, components use `react-native-svg` elements and accept `SvgProps` from that package.
 
 ## Contributing
 

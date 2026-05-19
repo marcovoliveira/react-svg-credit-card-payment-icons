@@ -50,11 +50,39 @@ function getVendorEntries() {
   return entries;
 }
 
+// Dynamically generate native format entries
+function getNativeFormatEntries() {
+  const iconsDir = 'generated/icons-native';
+  if (!fs.existsSync(iconsDir)) {
+    return {};
+  }
+
+  const entries: Record<string, string> = {};
+  const items = fs.readdirSync(iconsDir);
+
+  for (const item of items) {
+    const itemPath = path.join(iconsDir, item);
+    const stat = fs.statSync(itemPath);
+
+    if (!stat.isDirectory()) continue;
+
+    const indexPath = path.join(itemPath, 'index.ts');
+    if (fs.existsSync(indexPath)) {
+      entries[`native/icons/${item}`] = `generated/icons-native/${item}/index.ts`;
+    }
+  }
+
+  return entries;
+}
+
 export default defineConfig({
   entry: {
     index: 'src/index.tsx',
+    'native/index': 'src/index.native.tsx',
     // Dynamically add all icon format exports (flat, logo, mono, etc.)
     ...getFormatEntries(),
+    // Dynamically add native icon format exports
+    ...getNativeFormatEntries(),
     // Dynamically add vendor-specific exports (visa, mastercard, etc.)
     ...getVendorEntries(),
   },
@@ -63,6 +91,7 @@ export default defineConfig({
   target: 'es2022',
   clean: true,
   splitting: true,
+  external: ['react-native-svg'],
   esbuildPlugins: [
     {
       name: 'svgr',

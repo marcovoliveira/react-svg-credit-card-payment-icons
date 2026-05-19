@@ -1,12 +1,11 @@
 {
   // Editor settings
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
     "source.organizeImports": "never",
     "source.removeUnusedImports": "never"
   },
-
   // Language-specific formatters
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -23,15 +22,12 @@
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-
   // Prettier settings
   "prettier.requireConfig": true,
   "prettier.useEditorConfig": false,
-
   // ESLint settings
   "eslint.run": "onSave",
   "eslint.useFlatConfig": true,
-
   // TypeScript settings
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.includePackageJsonAutoImports": "on",
@@ -39,7 +35,6 @@
   "typescript.inlayHints.parameterNames.enabled": "literals",
   "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
   "typescript.inlayHints.enumMemberValues.enabled": true,
-
   // File explorer settings
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
@@ -70,18 +65,15 @@
     "generated/**": true,
     "pnpm-lock.yaml": true
   },
-
   // Markdown settings
   "markdownlint.config": {
     "MD024": false,
     "MD033": false
   },
-
   // YAML settings
   "yaml.schemas": {
     "./schemas/card-metadata.schema.json": "src/icons/**/*.yml"
   },
-
   // Spell checker
   "cSpell.enabled": true,
   "cSpell.words": [
@@ -107,7 +99,6 @@
     "Storbook",
     "unionpay"
   ],
-
   // Task settings
   "task.autoDetect": "on"
 }

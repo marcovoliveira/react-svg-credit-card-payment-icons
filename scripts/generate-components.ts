@@ -7,6 +7,7 @@ import YAML from 'yaml';
 
 const ICONS_DIR = 'src/icons';
 const TEMP_DIR = 'generated/icons';
+const NATIVE_DIR = 'generated/icons-native';
 
 type Style = string;
 
@@ -299,6 +300,157 @@ ${componentName}.cardMetadata = {
   fs.writeFileSync(componentPath, componentCode);
 
   return componentName;
+}
+
+async function generateNativeComponent(
+  vendor: string,
+  style: Style,
+  variantInfo?: { alias: string; slug: string }
+): Promise<string | undefined> {
+  const svgPrefix = variantInfo?.slug || vendor;
+  const svgFile = `${svgPrefix}-${style}.svg`;
+  const svgPath = path.join(ICONS_DIR, vendor, svgFile);
+
+  if (!fs.existsSync(svgPath)) return undefined;
+
+  const cardMetadata = loadCardMetadata(vendor);
+  const componentName = variantInfo
+    ? pascalCase(variantInfo.alias)
+    : cardMetadata?.type || pascalCase(vendor);
+  const nativeDir = path.join(NATIVE_DIR, style);
+
+  if (!fs.existsSync(nativeDir)) {
+    fs.mkdirSync(nativeDir, { recursive: true });
+  }
+
+  const svgContent = fs.readFileSync(svgPath, 'utf-8');
+  let componentCode = await transform(
+    svgContent,
+    {
+      plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx', '@svgr/plugin-prettier'],
+      typescript: true,
+      native: true,
+      dimensions: false,
+      expandProps: 'end',
+      svgoConfig: {
+        plugins: [
+          {
+            name: 'removeAttrs',
+            params: {
+              attrs: ['enable-background'],
+            },
+          },
+          {
+            name: 'inlineStyles',
+            params: {
+              onlyMatchedOnce: false,
+            },
+          },
+          {
+            name: 'prefixIds',
+            params: {
+              prefix: `${svgPrefix.toLowerCase()}-${style}`,
+            },
+          },
+        ],
+      },
+    },
+    { componentName }
+  );
+
+  // Remove enableBackground style property
+  componentCode = componentCode.replace(/\s+style=\{\{\s+enableBackground:.*?\}\}/gs, '');
+
+  // Remove xmlSpace, xmlns, and xmlnsXlink attributes not supported by react-native-svg
+  componentCode = componentCode.replace(/\s+xmlSpace="[^"]*"/g, '');
+  componentCode = componentCode.replace(/\s+xmlns="[^"]*"/g, '');
+  componentCode = componentCode.replace(/\s+xmlnsXlink="[^"]*"/g, '');
+
+  // Convert style={{ prop: 'value' }} to direct props for react-native-svg compatibility
+  // Handles single-property style objects like style={{ fill: '#000' }}
+  componentCode = componentCode.replace(
+    /\s+style=\{\{\s*(\w+):\s*['"]([^'"]+)['"]\s*,?\s*\}\}/g,
+    (_, prop, value) => {
+      // Convert camelCase CSS props to SVG attributes
+      const propMap: Record<string, string> = {
+        fill: 'fill',
+        stroke: 'stroke',
+        strokeWidth: 'strokeWidth',
+        opacity: 'opacity',
+        fillOpacity: 'fillOpacity',
+        strokeOpacity: 'strokeOpacity',
+        fillRule: 'fillRule',
+        clipRule: 'clipRule',
+        strokeLinecap: 'strokeLinecap',
+        strokeLinejoin: 'strokeLinejoin',
+        strokeMiterlimit: 'strokeMiterlimit',
+        strokeDasharray: 'strokeDasharray',
+        strokeDashoffset: 'strokeDashoffset',
+      };
+      const svgProp = propMap[prop] || prop;
+      return ` ${svgProp}="${value}"`;
+    }
+  );
+
+  // Convert multi-property style objects
+  componentCode = componentCode.replace(
+    /\s+style=\{\{([^}]+)\}\}/g,
+    (_, content: string) => {
+      const props = content
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean)
+        .map((pair: string) => {
+          const match = pair.match(/(\w+):\s*['"]([^'"]+)['"]/);
+          if (match) return ` ${match[1]}="${match[2]}"`;
+          return '';
+        })
+        .join('');
+      return props;
+    }
+  );
+
+  // Remove display attribute AFTER style conversion (react-native-svg doesn't support it)
+  componentCode = componentCode.replace(/\s+display="[^"]*"/g, '');
+
+  const componentPath = path.join(nativeDir, `${componentName}.tsx`);
+  fs.writeFileSync(componentPath, componentCode);
+
+  return componentName;
+}
+
+function generateNativeIndexFile(
+  style: Style,
+  components: string[],
+  aliasMap: Map<string, string[]>
+): void {
+  const nativeDir = path.join(NATIVE_DIR, style);
+  const uniqueComponents = [...new Set(components)].sort();
+
+  const mainExports = uniqueComponents.map(
+    (name) => `export { default as ${name} } from './${name}';`
+  );
+
+  const iconSuffixExports = uniqueComponents.map((name) =>
+    [`/** @alias ${name} */`, `export { default as ${name}Icon } from './${name}';`].join('\n')
+  );
+
+  const aliasExports: string[] = [];
+  for (const [mainComponent, aliases] of aliasMap.entries()) {
+    if (uniqueComponents.includes(mainComponent)) {
+      for (const alias of aliases) {
+        aliasExports.push(
+          `/** @alias ${mainComponent} */`,
+          `export { default as ${alias} } from './${mainComponent}';`
+        );
+      }
+    }
+  }
+
+  const indexContent =
+    [...mainExports, '', ...iconSuffixExports, '', ...aliasExports].join('\n') + '\n';
+
+  fs.writeFileSync(path.join(nativeDir, 'index.ts'), indexContent);
 }
 
 function generateIndexFile(
@@ -700,10 +852,12 @@ async function main(): Promise<void> {
 
   const vendors = getVendorDirectories();
   const componentsByStyle: Record<string, string[]> = {};
+  const nativeComponentsByStyle: Record<string, string[]> = {};
 
   // Initialize componentsByStyle with discovered styles
   for (const style of STYLES) {
     componentsByStyle[style] = [];
+    nativeComponentsByStyle[style] = [];
   }
 
   // Build alias map: vendor -> aliases[]
@@ -719,12 +873,16 @@ async function main(): Promise<void> {
       aliasMap.set(componentName, aliases);
     }
 
-    // Generate default component
+    // Generate default component (web + native)
     for (const style of STYLES) {
       const generatedName = await generateComponent(vendor, style);
       if (generatedName) {
         componentsByStyle[style].push(generatedName);
         console.log(`✓ ${style}/${generatedName}.tsx`);
+      }
+      const nativeName = await generateNativeComponent(vendor, style);
+      if (nativeName) {
+        nativeComponentsByStyle[style].push(nativeName);
       }
     }
 
@@ -744,12 +902,17 @@ async function main(): Promise<void> {
             `✓ ${style}/${componentName}.tsx (variant: ${variantInfo.alias} -> ${variantInfo.slug})`
           );
         }
+        const nativeName = await generateNativeComponent(vendor, style, variantInfo);
+        if (nativeName) {
+          nativeComponentsByStyle[style].push(nativeName);
+        }
       }
     }
   }
 
   STYLES.forEach((style) => {
     generateIndexFile(style, componentsByStyle[style], aliasMap);
+    generateNativeIndexFile(style, nativeComponentsByStyle[style], aliasMap);
   });
 
   // Log alias exports
@@ -767,7 +930,7 @@ async function main(): Promise<void> {
   // Generate vendor-specific exports
   generateVendorExports(vendors, STYLES);
 
-  console.log('\n✅ All components generated with inline styles!');
+  console.log('\n✅ All components generated (web + native)!');
 }
 
 main();
