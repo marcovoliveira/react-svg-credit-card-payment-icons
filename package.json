@@ -25,9 +25,9 @@
         "require": "./dist/index.js"
       },
       "default": {
-        "types": "./dist/native/index.d.ts",
-        "import": "./dist/native/index.mjs",
-        "require": "./dist/native/index.js"
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
       }
     },
     "./native": {
@@ -52,9 +52,9 @@
         "require": "./dist/icons/*.js"
       },
       "default": {
-        "types": "./dist/native/icons/*.d.ts",
-        "import": "./dist/native/icons/*.mjs",
-        "require": "./dist/native/icons/*.js"
+        "types": "./dist/icons/*.d.ts",
+        "import": "./dist/icons/*.mjs",
+        "require": "./dist/icons/*.js"
       }
     },
     "./*": {
