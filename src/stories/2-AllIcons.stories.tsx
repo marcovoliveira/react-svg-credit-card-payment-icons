@@ -87,10 +87,10 @@ const meta = {
         component: `
 # All Available Icons
 
-Browse all 18 payment card icons in different visual styles.
+Browse all 19 payment card icons in different visual styles.
 
 **Available Cards:**
-Alipay, American Express, Code, Diners, Discover, Elo, Generic, Hiper, Hipercard, JCB, Maestro, Mastercard, Mir, PayPal, Swish, UnionPay, Visa
+Alipay, American Express, Code, Diners, Discover, Elo, Generic, Hiper, Hipercard, JCB, Maestro, Mastercard, Mir, PayPal, Swish, UnionPay, Venmo, Visa
 
 **Available Styles:**
 flat, flatRounded, logo, logoBorder, mono, monoOutline

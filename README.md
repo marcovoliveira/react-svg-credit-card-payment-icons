@@ -377,6 +377,7 @@ If the type does not exist, the default setting is generic. Type names are case-
 | `Paypal`     | <img src="./src/icons/paypal/paypal-flat-rounded.svg" width="80" alt="Paypal"/>                 |
 | `Swish`      | <img src="./src/icons/swish/swish-flat-rounded.svg" width="80" alt="Swish"/>                    |
 | `Unionpay`   | <img src="./src/icons/unionpay/unionpay-flat-rounded.svg" width="80" alt="Unionpay"/>           |
+| `Venmo`      | <img src="./src/icons/venmo/venmo-flat-rounded.svg" width="80" alt="Venmo"/>                    |
 | `Visa`       | <img src="./src/icons/visa/visa-flat-rounded.svg" width="80" alt="Visa"/>                       |
 | `Generic`    | <img src="./src/icons/generic/generic-flat-rounded.svg" width="80" alt="Generic"/>              |
 | `Code`       | <img src="./src/icons/generic/code-flat-rounded.svg" width="80" alt="Code"/>                       |

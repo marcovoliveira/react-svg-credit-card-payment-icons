@@ -197,6 +197,7 @@ export const AllAvailableIcons: Story = {
           'Paypal',
           'Swish',
           'Unionpay',
+          'Venmo',
           'Visa',
         ].map((name) => (
           <code

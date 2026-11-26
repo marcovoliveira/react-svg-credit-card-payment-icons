@@ -78,6 +78,7 @@ import { VisaFlatRoundedIcon, VisaLogoIcon } from 'react-svg-credit-card-payment
         'Paypal',
         'Swish',
         'Unionpay',
+        'Venmo',
         'Visa',
       ],
       description: 'The payment card type to display',

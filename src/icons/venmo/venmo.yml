@@ -1,0 +1,13 @@
+# Venmo doesn't have its own card numbers (Venmo-branded cards run on Visa and Mastercard)
+type: Venmo
+displayName: Venmo
+iconAuthor: Dalton Spranger (wordmark from Simple Icons)
+iconLicense: Apache-2.0 # Wordmark path from Simple Icons (CC0-1.0); the Venmo name and logo remain trademarks of PayPal, Inc. and are subject to Venmo's brand guidelines
+aliases: []
+testNumbers: []
+patterns:
+  full: null
+  prefix: null
+lengthRange: null
+formatPattern: null # Not a physical card
+issuingCountries: [US] # Venmo is only available in the US
